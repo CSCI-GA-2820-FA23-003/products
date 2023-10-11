@@ -6,7 +6,7 @@ Describe what your service does here
 
 from flask import jsonify, request, url_for, abort
 from service.common import status  # HTTP Status Codes
-from service.models import YourResourceModel
+from service.models import Product
 
 # Import Flask application
 from . import app
@@ -29,3 +29,22 @@ def index():
 ######################################################################
 
 # Place your REST API code here ...
+
+# GET product
+@app.route('/products', method=['GET'])
+def list_products():
+    """Returns all of the Products"""
+    app.logger.info("Request for product list")
+    products = []
+    category = request.args.get("category")
+    name = request.args.get("name")
+    if category:
+        products = Product.find_by_category(category)
+    elif name:
+        products = Product.find_by_name(name)
+    else:
+        products = Product.all()
+
+    results = [product.serialize() for product in products]
+    app.logger.info("Returning %d products", len(results))
+    return jsonify(results), status.HTTP_200_OK

@@ -15,14 +15,14 @@ db = SQLAlchemy()
 # Function to initialize the database
 def init_db(app):
     """ Initializes the SQLAlchemy app """
-    YourResourceModel.init_db(app)
+    Product.init_db(app)
 
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
 
-class YourResourceModel(db.Model):
+class Product(db.Model):
     """
     Class that represents a YourResourceModel
     """
@@ -32,6 +32,9 @@ class YourResourceModel(db.Model):
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
+    description = db.Column(db.Text)
+    price = db.Column(db.Float)
+    category = db.Column(db.String(63), nullable=False)
 
     def __repr__(self):
         return f"<YourResourceModel {self.name} id=[{self.id}]>"
@@ -113,3 +116,17 @@ class YourResourceModel(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+    @classmethod
+    def find_by_category(cls, category: str) -> list:
+        """Returns all of the Pets in a category
+
+        :param category: the category of the Products you want to match
+        :type category: str
+
+        :return: a collection of Products in that category
+        :rtype: list
+
+        """
+        logger.info("Processing category query for %s ...", category)
+        return cls.query.filter(cls.category == category)
