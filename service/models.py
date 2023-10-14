@@ -4,7 +4,10 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import validates
+from sqlalchemy import DateTime
 
 logger = logging.getLogger("flask.app")
 
@@ -15,14 +18,14 @@ db = SQLAlchemy()
 # Function to initialize the database
 def init_db(app):
     """ Initializes the SQLAlchemy app """
-    YourResourceModel.init_db(app)
+    Product.init_db(app)
 
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
 
-class YourResourceModel(db.Model):
+class Product(db.Model):
     """
     Class that represents a YourResourceModel
     """
@@ -32,6 +35,26 @@ class YourResourceModel(db.Model):
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
+    category = db.Column(db.String(63))
+    description = db.Column(db.Text)
+    create_time = db.Column(DateTime, default=datetime.utcnow)
+    update_time = db.Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+    image_url = db.Column(db.String(255))
+    quantity = db.Column(db.Integer)
+    available = db.Column(db.Boolean(), nullable=False, default=False)
+    price = db.Column(db.Float)
+
+    @validates("price")
+    def validate_price(self, key, value):
+        """
+        Validate price > 0
+        Raises:
+            ValueError
+        """
+        if value <= 0:
+            raise ValueError("Price must be a positive value!")
 
     def __repr__(self):
         return f"<YourResourceModel {self.name} id=[{self.id}]>"
@@ -113,3 +136,14 @@ class YourResourceModel(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+
+    @classmethod
+    def find_by_category(cls, category):
+        """Returns all products with the given category
+
+        Args:
+            category (string): the category of the product you want to match
+        """
+        logger.info("Processing category query for %s ...", category)
+        return cls.query.filter(cls.category == category)
