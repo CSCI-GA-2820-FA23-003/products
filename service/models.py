@@ -6,8 +6,7 @@ All of the models are stored in this module
 import logging
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import validates
-from sqlalchemy import DateTime
+from datetime import date
 
 logger = logging.getLogger("flask.app")
 
@@ -27,7 +26,7 @@ class DataValidationError(Exception):
 
 class Product(db.Model):
     """
-    Class that represents a YourResourceModel
+    Class that represents a Product
     """
 
     app = None
@@ -35,29 +34,14 @@ class Product(db.Model):
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
-    category = db.Column(db.String(63))
-    description = db.Column(db.Text)
-    create_time = db.Column(DateTime, default=datetime.utcnow)
-    update_time = db.Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
-    image_url = db.Column(db.String(255))
-    quantity = db.Column(db.Integer)
-    available = db.Column(db.Boolean(), nullable=False, default=False)
-    price = db.Column(db.Float)
-
-    @validates("price")
-    def validate_price(self, key, value):
-        """
-        Validate price > 0
-        Raises:
-            ValueError
-        """
-        if value <= 0:
-            raise ValueError("Price must be a positive value!")
+    price = db.Column(db.Float(), nullable=False)
+    category = db.Column(db.String(63), nullable=False)
+    inventory = db.Column(db.Integer(), nullable=False)
+    created_date = db.Column(db.Date(), nullable=False, default=date.today())
+    modified_date = db.Column(db.Date())
 
     def __repr__(self):
-        return f"<YourResourceModel {self.name} id=[{self.id}]>"
+        return f"<Product {self.name} id=[{self.id}]>"
 
     def create(self):
         """
@@ -70,9 +54,11 @@ class Product(db.Model):
 
     def update(self):
         """
-        Updates a YourResourceModel to the database
+        Updates a Product to the database
         """
         logger.info("Saving %s", self.name)
+        if not self.id:
+            raise DataValidationError("Empty ID field!")
         db.session.commit()
 
     def delete(self):
@@ -82,12 +68,22 @@ class Product(db.Model):
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a YourResourceModel into a dictionary """
-        return {"id": self.id, "name": self.name}
+        """ Serializes a Product into a dictionary """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "category": self.category,
+            "inventory": self.inventory,
+            "created_date": self.created_date.isoformat(),
+            "modified_date": self.modified_date.isoformat()
+            if self.modified_date is not None
+            else None,
+        }
 
     def deserialize(self, data):
         """
-        Deserializes a YourResourceModel from a dictionary
+        Deserializes a Product from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
@@ -96,11 +92,11 @@ class Product(db.Model):
             self.name = data["name"]
         except KeyError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: missing " + error.args[0]
+                "Invalid Product: missing " + error.args[0]
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: body of request contained bad or no data - "
+                "Invalid Product: body of request contained bad or no data - "
                 "Error message: " + error
             ) from error
         return self
