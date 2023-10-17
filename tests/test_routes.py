@@ -130,6 +130,22 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(date.fromisoformat(new_product["created_date"]), test_product.created_date)
         self.assertEqual(date.fromisoformat(new_product["modified_date"]), test_product.modified_date)
 
+    def test_update_product(self):
+        """It should Update an existing Product"""
+        # create a product to update
+        test_product = ProductFactory()
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the product
+        new_product = response.get_json()
+        logging.debug(new_product)
+        new_product["category"] = "unknown"
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}", json=new_product)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_product = response.get_json()
+        self.assertEqual(updated_product["category"], "unknown")
+
 
     ######################################################################
     #  T E S T   S A D   P A T H S
