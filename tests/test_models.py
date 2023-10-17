@@ -51,6 +51,32 @@ class TestYProduct(unittest.TestCase):
         """It should always be true"""
         self.assertTrue(True)
 
+    def test_create_a_product(self):
+        """It should Create a product and assert that it exists"""
+        product = Product(name="shirt", price=6, category="clothes", inventory=1, created_date=date.today(), modified_date=date.today())
+        self.assertEqual(str(product), "<Product shirt id=[None]>")
+        self.assertTrue(product is not None)
+        self.assertEqual(product.id, None)
+        self.assertEqual(product.name, "shirt")
+        self.assertEqual(product.price, 6)
+        self.assertEqual(product.category, "clothes")
+        self.assertEqual(product.inventory, 1)
+        self.assertEqual(product.created_date, date.today())
+        self.assertEqual(product.modified_date, date.today())
+
+    def test_add_a_product(self):
+        """It should Create a product and add it to the database"""
+        products = Product.all()
+        self.assertEqual(products, [])
+        product = Product(name="shirt", price=6, category="clothes", inventory=1, created_date=date.today(), modified_date=date.today())
+        self.assertTrue(product is not None)
+        self.assertEqual(product.id, None)
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        products = Product.all()
+        self.assertEqual(len(products), 1)
+
     def test_update_a_product(self):
         """It should Update an existing Product"""
         product = ProductFactory()
