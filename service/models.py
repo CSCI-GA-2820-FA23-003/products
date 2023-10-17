@@ -37,6 +37,7 @@ class Product(db.Model):
     price = db.Column(db.Float(), nullable=False)
     category = db.Column(db.String(63), nullable=False)
     inventory = db.Column(db.Integer(), nullable=False)
+    available = db.Column(db.Boolean(), nullable=False, default=False)
     created_date = db.Column(db.Date(), nullable=False, default=date.today())
     modified_date = db.Column(db.Date())
 
@@ -75,6 +76,7 @@ class Product(db.Model):
             "price": self.price,
             "category": self.category,
             "inventory": self.inventory,
+            "available": self.available,
             "created_date": self.created_date.isoformat(),
             "modified_date": self.modified_date.isoformat()
             if self.modified_date is not None
@@ -93,6 +95,13 @@ class Product(db.Model):
             self.price = data["price"]
             self.category = data["category"]
             self.inventory = data["inventory"]
+            if isinstance(data["available"], bool):
+                self.available = data["available"]
+            else:
+                raise DataValidationError(
+                    "Invalid type for boolean [available]: "
+                    + str(type(data["available"]))
+                )
             self.created_date = date.fromisoformat(data["created_date"])
             self.modified_date = date.fromisoformat(data["modified_date"])
         except AttributeError as error:
@@ -116,6 +125,7 @@ class Product(db.Model):
         # This is where we initialize SQLAlchemy from the Flask app
         db.init_app(app)
         app.app_context().push()
+        db.drop_all()
         db.create_all()  # make our sqlalchemy tables
 
     @classmethod

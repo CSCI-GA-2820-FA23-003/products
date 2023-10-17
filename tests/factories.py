@@ -21,5 +21,6 @@ class ProductFactory(factory.Factory):
     price = FuzzyFloat(10, 60)
     category = FuzzyChoice(choices=["beverage", "dairy", "fruit", "vegetable"])
     inventory = FuzzyInteger(0, 40)
+    available = FuzzyChoice(choices=[True, False])
     created_date = date(2023, 1, 1)
     modified_date = date(2023, 1, 2)
