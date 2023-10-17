@@ -9,6 +9,7 @@ import os
 import logging
 from unittest import TestCase
 from datetime import date
+from urllib.parse import quote_plus
 from service import app
 from service.models import db, init_db, Product
 from service.common import status  # HTTP Status Codes
@@ -81,6 +82,38 @@ class TestYourResourceServer(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
+
+    def test_query_product_list_by_category(self):
+        """It should Query Product by Category"""
+        products = self._create_products(10)
+        test_category = products[0].category
+        category_products = [product for product in products if product.category == test_category]
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"category={quote_plus(test_category)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(category_products))
+        # check the data just to be sure
+        for product in data:
+            self.assertEqual(product["category"], test_category)
+
+    def test_query_product_list_by_name(self):
+        """It should Query Product by Name"""
+        products = self._create_products(10)
+        test_name = products[0].name
+        name_products = [product for product in products if product.name == test_name]
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"name={quote_plus(test_name)}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), len(name_products))
+        # check the data just to be sure
+        for product in data:
+            self.assertEqual(product["name"], test_name)
 
     def test_get_product(self):
         """It should Get a single Product"""
