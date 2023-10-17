@@ -27,6 +27,28 @@ def index():
 
 
 ######################################################################
+# LIST ALL PRODUCTS
+######################################################################
+@app.route("/products", methods=["GET"])
+def list_pets():
+    """Returns all of the Products"""
+    app.logger.info("Request for product list")
+    products = []
+    category = request.args.get("category")
+    name = request.args.get("name")
+    if category:
+        products = Product.find_by_category(category)
+    elif name:
+        products = Product.find_by_name(name)
+    else:
+        products = Product.all()
+
+    results = [product.serialize() for product in products]
+    app.logger.info("Returning %d products", len(results))
+    return jsonify(results), status.HTTP_200_OK
+
+
+######################################################################
 # RETRIEVE A PRODUCT
 ######################################################################
 @app.route("/products/<int:product_id>", methods=["GET"])
