@@ -30,7 +30,7 @@ def index():
 # LIST ALL PRODUCTS
 ######################################################################
 @app.route("/products", methods=["GET"])
-def list_pets():
+def list_products():
     """Returns all of the Products"""
     app.logger.info("Request for product list")
     products = []
@@ -61,7 +61,9 @@ def get_products(product_id):
     app.logger.info("Request for product with id: %s", product_id)
     product = Product.find(product_id)
     if not product:
-        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
 
     app.logger.info("Returning product: %s", product.name)
     return jsonify(product.serialize()), status.HTTP_200_OK
@@ -102,7 +104,9 @@ def update_product(product_id):
 
     product = Product.find(product_id)
     if not product:
-        abort(status.HTTP_404_NOT_FOUND, f"Pet with id '{product_id}' was not found.")
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
 
     product.deserialize(request.get_json())
     product.id = product_id
@@ -129,6 +133,34 @@ def delete_products(product_id):
 
     app.logger.info("Product with ID [%s] delete complete.", product_id)
     return "", status.HTTP_204_NO_CONTENT
+
+
+######################################################################
+# PURCHASE A PRODUCT
+######################################################################
+@app.route("/products/<int:product_id>/purchase", methods=["PUT"])
+def purchase_products(product_id):
+    """Purchasing a Pet makes it unavailable"""
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+    if not product.available:
+        abort(
+            status.HTTP_409_CONFLICT,
+            f"Product with id '{product_id}' is not available.",
+        )
+
+    # At this point you would execute code to purchase the pet
+    # For the moment, we will just set them to unavailable
+
+    product.inventory -= 1
+    if product.inventory == 0:
+        product.available = False
+    product.update()
+
+    return product.serialize(), status.HTTP_200_OK
 
 
 ######################################################################

@@ -53,7 +53,15 @@ class TestYProduct(unittest.TestCase):
 
     def test_create_a_product(self):
         """It should Create a product and assert that it exists"""
-        product = Product(name="shirt", price=6, category="clothes", inventory=1, created_date=date.today(), modified_date=date.today())
+        product = Product(
+            name="shirt",
+            price=6,
+            category="clothes",
+            inventory=1,
+            available=True,
+            created_date=date.today(),
+            modified_date=date.today(),
+        )
         self.assertEqual(str(product), "<Product shirt id=[None]>")
         self.assertTrue(product is not None)
         self.assertEqual(product.id, None)
@@ -61,6 +69,7 @@ class TestYProduct(unittest.TestCase):
         self.assertEqual(product.price, 6)
         self.assertEqual(product.category, "clothes")
         self.assertEqual(product.inventory, 1)
+        self.assertEqual(product.available, True)
         self.assertEqual(product.created_date, date.today())
         self.assertEqual(product.modified_date, date.today())
 
@@ -68,7 +77,14 @@ class TestYProduct(unittest.TestCase):
         """It should Create a product and add it to the database"""
         products = Product.all()
         self.assertEqual(products, [])
-        product = Product(name="shirt", price=6, category="clothes", inventory=1, created_date=date.today(), modified_date=date.today())
+        product = Product(
+            name="shirt",
+            price=6,
+            category="clothes",
+            inventory=1,
+            created_date=date.today(),
+            modified_date=date.today(),
+        )
         self.assertTrue(product is not None)
         self.assertEqual(product.id, None)
         product.create()
@@ -125,6 +141,10 @@ class TestYProduct(unittest.TestCase):
         self.assertEqual(data["name"], product.name)
         self.assertIn("category", data)
         self.assertEqual(data["category"], product.category)
+        self.assertIn("inventory", data)
+        self.assertEqual(data["inventory"], product.inventory)
+        self.assertIn("available", data)
+        self.assertEqual(data["available"], product.available)
         self.assertIn("created_date", data)
         self.assertEqual(date.fromisoformat(data["created_date"]), product.created_date)
         self.assertIn("modified_date", data)
@@ -157,6 +177,14 @@ class TestYProduct(unittest.TestCase):
     def test_deserialize_bad_data(self):
         """It should not deserialize bad data"""
         data = "this is not a dictionary"
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_bad_available(self):
+        """It should not deserialize a bad available attribute"""
+        test_product = ProductFactory()
+        data = test_product.serialize()
+        data["available"] = "False"
         product = Product()
         self.assertRaises(DataValidationError, product.deserialize, data)
 
