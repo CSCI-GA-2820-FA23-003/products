@@ -10,10 +10,13 @@ import logging
 from unittest import TestCase
 from datetime import date
 from service import app
-from service.models import db
+from service.models import db, init_db, Product
 from service.common import status  # HTTP Status Codes
 from tests.factories import ProductFactory
 
+DATABASE_URI = os.getenv(
+    "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
+)
 BASE_URL = "/products"
 
 ######################################################################
@@ -26,17 +29,27 @@ class TestYourResourceServer(TestCase):
     @classmethod
     def setUpClass(cls):
         """ This runs once before the entire test suite """
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        # Set up the test database
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        init_db(app)
 
     @classmethod
     def tearDownClass(cls):
         """ This runs once after the entire test suite """
+        db.session.close()
 
     def setUp(self):
         """ This runs before each test """
         self.client = app.test_client()
+        db.session.query(Product).delete()  # clean up the last tests
+        db.session.commit()
 
     def tearDown(self):
         """ This runs after each test """
+        db.session.remove()
 
     def _create_products(self, count):
         """Factory method to create pets in bulk"""
@@ -60,6 +73,14 @@ class TestYourResourceServer(TestCase):
         """ It should call the home page """
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_get_product_list(self):
+        """It should Get a list of Products"""
+        self._create_products(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
 
     def test_get_product(self):
         """It should Get a single Product"""
