@@ -4,6 +4,7 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
 
@@ -15,12 +16,12 @@ db = SQLAlchemy()
 
 # Function to initialize the database
 def init_db(app):
-    """ Initializes the SQLAlchemy app """
+    """Initializes the SQLAlchemy app"""
     Product.init_db(app)
 
 
 class DataValidationError(Exception):
-    """ Used for an data validation errors when deserializing """
+    """Used for an data validation errors when deserializing"""
 
 
 class Product(db.Model):
@@ -61,13 +62,13 @@ class Product(db.Model):
         db.session.commit()
 
     def delete(self):
-        """ Removes a YourResourceModel from the data store """
+        """Removes a YourResourceModel from the data store"""
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a Product into a dictionary """
+        """Serializes a Product into a dictionary"""
         return {
             "id": self.id,
             "name": self.name,
@@ -89,6 +90,13 @@ class Product(db.Model):
         """
         try:
             self.name = data["name"]
+            self.price = data["price"]
+            self.category = data["category"]
+            self.inventory = data["inventory"]
+            self.created_date = date.fromisoformat(data["created_date"])
+            self.modified_date = date.fromisoformat(data["modified_date"])
+        except AttributeError as error:
+            raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Product: missing " + error.args[0]
@@ -96,13 +104,13 @@ class Product(db.Model):
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Product: body of request contained bad or no data - "
-                "Error message: " + error
+                "Error message: " + str(error)
             ) from error
         return self
 
     @classmethod
     def init_db(cls, app):
-        """ Initializes the database session """
+        """Initializes the database session"""
         logger.info("Initializing database")
         cls.app = app
         # This is where we initialize SQLAlchemy from the Flask app
@@ -112,13 +120,13 @@ class Product(db.Model):
 
     @classmethod
     def all(cls):
-        """ Returns all of the YourResourceModels in the database """
+        """Returns all of the YourResourceModels in the database"""
         logger.info("Processing all YourResourceModels")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a YourResourceModel by it's ID """
+        """Finds a YourResourceModel by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
