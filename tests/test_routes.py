@@ -90,10 +90,11 @@ class TestYourResourceServer(TestCase):
         """It should Query Product by Category"""
         products = self._create_products(10)
         test_category = products[0].category
-        category_products = [product for product in products if product.category == test_category]
+        category_products = [
+            product for product in products if product.category == test_category
+        ]
         response = self.client.get(
-            BASE_URL,
-            query_string=f"category={quote_plus(test_category)}"
+            BASE_URL, query_string=f"category={quote_plus(test_category)}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
@@ -108,8 +109,7 @@ class TestYourResourceServer(TestCase):
         test_name = products[0].name
         name_products = [product for product in products if product.name == test_name]
         response = self.client.get(
-            BASE_URL,
-            query_string=f"name={quote_plus(test_name)}"
+            BASE_URL, query_string=f"name={quote_plus(test_name)}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
@@ -264,6 +264,17 @@ class TestYourResourceServer(TestCase):
         bad_id = 999999
         response = self.client.put(f"BASE_URL/{bad_id}/purchase")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_product_not_found(self):
+        """It should not Update a Product thats not found"""
+        test_product = ProductFactory()
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}", json=test_product.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
 
     # def test_create_product_bad_price(self):
     #     """It should not Create a Product with bad available data"""
