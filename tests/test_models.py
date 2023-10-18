@@ -47,10 +47,6 @@ class TestYProduct(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """It should always be true"""
-        self.assertTrue(True)
-
     def test_create_a_product(self):
         """It should Create a product and assert that it exists"""
         product = Product(

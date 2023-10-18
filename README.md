@@ -52,8 +52,47 @@ service/                   - service python package
 tests/              - test cases package
 ├── __init__.py     - package initializer
 ├── test_models.py  - test suite for business models
-└── test_routes.py  - test suite for service routes
+├── test_routes.py  - test suite for service routes
+└── factories.py    - product factory for test cases
 ```
+
+## Running the service
+
+The project uses Flask and to start the service, simply use:
+
+```bash
+$ flask start
+```
+
+You should be able to reach the service at: http://localhost:8000. The port that is used is controlled by an environment variable defined in the .flaskenv file which Flask uses to load it's configuration from the environment by default.
+
+## Information about this repo
+
+### Models
+
+#### `Product`
+
+| `Name`      | `Data type`             |
+| ----------- | --------------------- |
+| id | uuid|
+| name |String |
+| price | Float |
+| category | String |
+| inventory | Integer |
+| available | Boolean |
+| created_date | Date |
+| modified_date | Date |
+
+### Available Methods
+
+| `Endpoint``          | `Methods`` | `Rule``       |
+|-------------------|---------|---------------------|
+| create_products   | POST    | /products           |
+| delete_products   | DELETE  | /products/{product_id} |
+| get_products      | GET     | /products//products/{product_id} |
+| list_products     | GET     | /products           |
+| purchase_products | PUT     | /products/{product_id}/purchase |
+| update_product    | PUT     | /products//products/{product_id} |
 
 ## License
 
