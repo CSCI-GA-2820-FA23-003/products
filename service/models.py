@@ -3,10 +3,10 @@ Models for YourResourceModel
 
 All of the models are stored in this module
 """
+# pylint: disable=too-many-instance-attributes
 import logging
-from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 from datetime import date
+from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 

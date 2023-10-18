@@ -6,7 +6,6 @@ PUT /products/{product_id} - Updates a Product record in the database
 """
 
 from flask import jsonify, request, url_for, abort
-from datetime import date
 from service.common import status  # HTTP Status Codes
 from service.models import Product
 
