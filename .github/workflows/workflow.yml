@@ -51,7 +51,8 @@ jobs:
           flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
           # Run pylint to catch other PEP8 errors
           pylint service tests --max-line-length=127
-
+          
+      # changing to nose
       - name: Run unit tests with nose
         run: |
           export FLASK_APP=service:app
