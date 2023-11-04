@@ -53,10 +53,10 @@ jobs:
           pylint service tests --max-line-length=127
           
       # changing to nose
-      - name: Run unit tests with nose
+      - name: Run unit tests 
         run: |
           export FLASK_APP=service:app
-          nosetests
+          green -vvv --processes=1 --run-coverage --termcolor --minimum-coverage=95
         env:
           DATABASE_URI: "postgresql://postgres:postgres@postgres:5432/testdb"
 
