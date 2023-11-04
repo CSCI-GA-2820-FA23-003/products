@@ -52,10 +52,12 @@ jobs:
           # Run pylint to catch other PEP8 errors
           pylint service tests --max-line-length=127
 
-      - name: Run unit tests with PyTest
-        run: pytest --pspec --cov=service --cov-fail-under=95
+      - name: Run unit tests with nose
+        run: |
+          export FLASK_APP=service:app
+          nosetests
         env:
-          DATABASE_URI: "redis://redis:6379"
+          DATABASE_URI: "postgresql://postgres:postgres@postgres:5432/testdb"
 
       # Uncomment the following 2 lines during hands-on lab
       
