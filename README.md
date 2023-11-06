@@ -4,9 +4,6 @@
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 [![Build Status](https://github.com/CSCI-GA-2820-FA23-003/products/actions/workflows/workflow.yml/badge.svg)](https://github.com/CSCI-GA-2820-FA23-003/products/actions)
 
-
-
-
 ## Overview
 
 This project template contains starter code for your class project. The `/service` folder contains your `models.py` file for your model and a `routes.py` file for your service. The `/tests` folder has test case starter code for testing the model and the service separately. All you need to do is add your functionality. You can use the [lab-flask-tdd](https://github.com/nyu-devops/lab-flask-tdd) for code examples to copy from.
