@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 
 [![codecov](https://codecov.io/gh/CSCI-GA-2820-FA23-003/products/graph/badge.svg?token=NPSQQ56DRJ)](https://codecov.io/gh/CSCI-GA-2820-FA23-003/products)
-This is a skeleton you can use to start your projects
+[![Build Status](https://github.com/CSCI-GA-2820-FA23-003/products/actions/workflows/workflow.yml/badge.svg)](https://github.com/CSCI-GA-2820-FA23-003/products/actions)
 
 ## Overview
 
