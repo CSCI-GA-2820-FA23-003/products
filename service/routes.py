@@ -116,6 +116,43 @@ def update_product(product_id):
 
 
 ######################################################################
+#  ADJUST A PRODUCT INVENTORY
+######################################################################
+@app.route("/products/<int:product_id>/adjust_inventory", methods=["PUT"])
+def adjust_inventory(product_id):
+    """
+    Update a Product
+
+    This endpoint will update a Product based the body that is posted
+    """
+    app.logger.info("Request to adjust inventory with id: %s", product_id)
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+
+    data = request.get_json()
+    if "inventory_change" not in data:
+        abort(status.HTTP_400_BAD_REQUEST, "Inventory change value is required.")
+
+    inventory_change = data["inventory_change"]
+    if not isinstance(inventory_change, int):
+        abort(status.HTTP_400_BAD_REQUEST, "Inventory change value must be an integer.")
+
+    product.inventory += inventory_change
+    if product.inventory <= 0:
+        product.inventory = 0
+        product.available = False
+
+    product.update()
+
+    app.logger.info("Product Inventory with ID [%s] updated.", product.id)
+    return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 # DELETE A PRODUCT
 ######################################################################
 @app.route("/products/<int:product_id>", methods=["DELETE"])

@@ -240,6 +240,27 @@ class TestYourResourceServer(TestCase):
         response = self.client.put(f"{BASE_URL}/{product_unavailable.id}/purchase")
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
+    def test_adjust_inventory(self):
+        """It should adjust the inventory of a product"""
+        test_product = ProductFactory()
+        test_product.inventory = 10
+        test_product.available = True
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test product",
+        )
+        test_product.id = response.get_json()["id"]
+        adjust_data = {"inventory_change": -15}
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/adjust_inventory", json=adjust_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        logging.debug("Response data: %s", data)
+        self.assertEqual(data["available"], False)
+
     ######################################################################
     #  T E S T   S A D   P A T H S
     ######################################################################
@@ -275,6 +296,45 @@ class TestYourResourceServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    def test_adjust_inventory_not_found(self):
+        """It should not adjust the inventory of a product that is not found"""
+        test_product = ProductFactory()
+        response = self.client.put(f"{BASE_URL}/{test_product.id}/adjust_inventory")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
+
+    def test_adjust_inventory_bad_data(self):
+        """It should not adjust the inventory of a product with bad data"""
+        test_product = ProductFactory()
+        test_product.inventory = 10
+        test_product.available = True
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test product",
+        )
+        test_product.id = response.get_json()["id"]
+        adjust_data = {"inventory_change": "bad_data"}
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/adjust_inventory", json=adjust_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        logging.debug("Response data: %s", data)
+        self.assertIn("must be an integer", data["message"])
+
+        adjust_data = {"test": "bad_data"}
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/adjust_inventory", json=adjust_data
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        logging.debug("Response data: %s", data)
+        self.assertIn("value is required", data["message"])
 
     # def test_create_product_bad_price(self):
     #     """It should not Create a Product with bad available data"""
