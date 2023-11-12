@@ -116,6 +116,29 @@ def update_product(product_id):
 
 
 ######################################################################
+#  LIKE A PRODUCT
+######################################################################
+@app.route("/products/<int:product_id>/like", methods=["PUT"])
+def like_product(product_id):
+    """
+    Like a Product
+
+    This endpoint will like a product given the id
+    """
+    app.logger.info("Request to like product with id: %s", product_id)
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+    product.like += 1
+    product.update()
+    app.logger.info("Like count of product with id [%s] updated.", product.id)
+    return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  ADJUST A PRODUCT INVENTORY
 ######################################################################
 @app.route("/products/<int:product_id>/adjust_inventory", methods=["PUT"])

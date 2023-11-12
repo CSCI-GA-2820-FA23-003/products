@@ -40,6 +40,7 @@ class Product(db.Model):
     available = db.Column(db.Boolean(), nullable=False, default=False)
     created_date = db.Column(db.Date(), nullable=False, default=date.today())
     modified_date = db.Column(db.Date())
+    like = db.Column(db.Integer(), nullable=False, default=0)
 
     def __repr__(self):
         return f"<Product {self.name} id=[{self.id}]>"
@@ -78,9 +79,8 @@ class Product(db.Model):
             "inventory": self.inventory,
             "available": self.available,
             "created_date": self.created_date.isoformat(),
-            "modified_date": self.modified_date.isoformat()
-            if self.modified_date is not None
-            else None,
+            "modified_date": self.modified_date.isoformat(),
+            "like": self.like if self.modified_date is not None else None,
         }
 
     def deserialize(self, data):
@@ -104,6 +104,16 @@ class Product(db.Model):
                 )
             self.created_date = date.fromisoformat(data["created_date"])
             self.modified_date = date.fromisoformat(data["modified_date"])
+
+            if not isinstance(data["like"], int):
+                raise DataValidationError(
+                    "Invalid type for int [like]: " + str(type(data["like"]))
+                )
+            if data["like"] < 0:
+                raise DataValidationError(
+                    "Invalid value for like. Like should be a non-negative value."
+                )
+            self.like = data["like"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

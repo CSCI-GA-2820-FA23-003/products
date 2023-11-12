@@ -261,6 +261,18 @@ class TestYourResourceServer(TestCase):
         logging.debug("Response data: %s", data)
         self.assertEqual(data["available"], False)
 
+    def test_like_product(self):
+        """It should like a product that is found"""
+        test_product = self._create_products(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        like_cnt = test_product.like
+
+        response = self.client.put(f"{BASE_URL}/{test_product.id}/like")
+        data = self.client.get(f"{BASE_URL}/{test_product.id}").get_json()
+        self.assertEqual(data["like"], like_cnt + 1)
+
     ######################################################################
     #  T E S T   S A D   P A T H S
     ######################################################################
@@ -335,6 +347,17 @@ class TestYourResourceServer(TestCase):
         data = response.get_json()
         logging.debug("Response data: %s", data)
         self.assertIn("value is required", data["message"])
+
+    def test_like_product_not_found(self):
+        """It should not like a product that is not found"""
+        test_product = ProductFactory()
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/like", json=test_product.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
 
     # def test_create_product_bad_price(self):
     #     """It should not Create a Product with bad available data"""
