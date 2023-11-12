@@ -147,6 +147,8 @@ class TestYProduct(unittest.TestCase):
         self.assertEqual(
             date.fromisoformat(data["modified_date"]), product.modified_date
         )
+        self.assertIn("like", data)
+        self.assertEqual(data["like"], product.like)
 
     def test_deserialize_a_product(self):
         """It should de-serialize a Product"""
@@ -163,6 +165,7 @@ class TestYProduct(unittest.TestCase):
         self.assertEqual(
             product.modified_date, date.fromisoformat(data["modified_date"])
         )
+        self.assertEqual(product.like, data["like"])
 
     def test_deserialize_missing_data(self):
         """It should not deserialize a Product with missing data"""
@@ -198,6 +201,7 @@ class TestYProduct(unittest.TestCase):
         self.assertEqual(product.id, products[1].id)
         self.assertEqual(product.name, products[1].name)
         self.assertEqual(product.price, products[1].price)
+        self.assertEqual(product.like, products[1].like)
 
     def test_find_by_name(self):
         """It should Find a Product by Name"""

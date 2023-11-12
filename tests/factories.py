@@ -24,3 +24,4 @@ class ProductFactory(factory.Factory):
     available = FuzzyChoice(choices=[True, False])
     created_date = date(2023, 1, 1)
     modified_date = date(2023, 1, 2)
+    like = FuzzyInteger(0, 100)
