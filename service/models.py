@@ -104,15 +104,6 @@ class Product(db.Model):
                 )
             self.created_date = date.fromisoformat(data["created_date"])
             self.modified_date = date.fromisoformat(data["modified_date"])
-
-            if not isinstance(data["like"], int):
-                raise DataValidationError(
-                    "Invalid type for int [like]: " + str(type(data["like"]))
-                )
-            if data["like"] < 0:
-                raise DataValidationError(
-                    "Invalid value for like. Like should be a non-negative value."
-                )
             self.like = data["like"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
