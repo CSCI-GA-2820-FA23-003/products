@@ -223,6 +223,36 @@ def purchase_products(product_id):
 
 
 ######################################################################
+# DISABLE A PRODUCT
+######################################################################
+@app.route("/products/<int:product_id>/disable", methods=["PUT"])
+def disable_product(product_id):
+    """
+    Disable a Product
+
+    This endpoint will disable a product given the id
+    """
+    app.logger.info("Request to disable product with id: %s", product_id)
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+    if product.disable is False:
+        product.disable = True
+        product.available = False
+        product.update()
+        app.logger.info("The [%s] has been disabled.", product.id)
+        return jsonify(product.serialize()), status.HTTP_200_OK
+    else:
+        app.logger.info(
+            "The product with product-id: [%s] is already disabled.", product.id
+        )
+        return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
