@@ -23,7 +23,7 @@ spec:
       containers:
       - name: products
         image: cluster-registry:32000/products:1.0
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           protocol: TCP
