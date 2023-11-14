@@ -109,8 +109,6 @@ class Product(db.Model):
             self.like = data["like"]
             if "disable" in data and isinstance(data["disable"], bool):
                 self.disable = data["disable"]
-            else:
-                self.disable = False
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

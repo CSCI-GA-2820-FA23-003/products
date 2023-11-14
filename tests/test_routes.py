@@ -376,6 +376,17 @@ class TestYourResourceServer(TestCase):
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
 
+    def test_disable_product_not_found(self):
+        """It should not disable a product that is not found"""
+        test_product = ProductFactory()
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/disable", json=test_product.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
+
     # def test_create_product_bad_price(self):
     #     """It should not Create a Product with bad available data"""
     #     test_product = ProductFactory()
