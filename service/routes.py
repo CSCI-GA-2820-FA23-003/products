@@ -239,16 +239,10 @@ def disable_product(product_id):
         abort(
             status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
         )
-    if product.disable is False:
         product.disable = True
         product.available = False
         product.update()
         app.logger.info("The [%s] has been disabled.", product.id)
-        return jsonify(product.serialize()), status.HTTP_200_OK
-    else:
-        app.logger.info(
-            "The product with product-id: [%s] is already disabled.", product.id
-        )
         return jsonify(product.serialize()), status.HTTP_200_OK
 
 
