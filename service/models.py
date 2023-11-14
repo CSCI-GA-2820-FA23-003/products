@@ -41,6 +41,7 @@ class Product(db.Model):
     created_date = db.Column(db.Date(), nullable=False, default=date.today())
     modified_date = db.Column(db.Date())
     like = db.Column(db.Integer(), nullable=False, default=0)
+    disable = db.Column(db.Boolean(), nullable=True, default=False)
 
     def __repr__(self):
         return f"<Product {self.name} id=[{self.id}]>"
@@ -81,6 +82,7 @@ class Product(db.Model):
             "created_date": self.created_date.isoformat(),
             "modified_date": self.modified_date.isoformat(),
             "like": self.like if self.modified_date is not None else None,
+            "disable": self.disable or False,
         }
 
     def deserialize(self, data):
@@ -105,6 +107,8 @@ class Product(db.Model):
             self.created_date = date.fromisoformat(data["created_date"])
             self.modified_date = date.fromisoformat(data["modified_date"])
             self.like = data["like"]
+            if "disable" in data and isinstance(data["disable"], bool):
+                self.disable = data["disable"]
         except AttributeError as error:
             raise DataValidationError("Invalid attribute: " + error.args[0]) from error
         except KeyError as error:

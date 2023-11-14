@@ -25,3 +25,4 @@ class ProductFactory(factory.Factory):
     created_date = date(2023, 1, 1)
     modified_date = date(2023, 1, 2)
     like = FuzzyInteger(0, 100)
+    disable = FuzzyChoice(choices=[True, False])
