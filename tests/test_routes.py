@@ -273,6 +273,23 @@ class TestYourResourceServer(TestCase):
         data = self.client.get(f"{BASE_URL}/{test_product.id}").get_json()
         self.assertEqual(data["like"], like_cnt + 1)
 
+    def test_disable_product(self):
+        """It should disable the fetched product"""
+        # create a product to disable
+        test_product = ProductFactory()
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # disable the product
+        new_product = response.get_json()
+        logging.debug(new_product)
+        response = self.client.put(
+            f"{BASE_URL}/{new_product['id']}/disable", json=new_product
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_product = response.get_json()
+        self.assertEqual(updated_product["disable"], True)
+
     ######################################################################
     #  T E S T   S A D   P A T H S
     ######################################################################
@@ -353,6 +370,17 @@ class TestYourResourceServer(TestCase):
         test_product = ProductFactory()
         response = self.client.put(
             f"{BASE_URL}/{test_product.id}/like", json=test_product.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
+
+    def test_disable_product_not_found(self):
+        """It should not disable a product that is not found"""
+        test_product = ProductFactory()
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/disable", json=test_product.serialize()
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
