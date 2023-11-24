@@ -219,6 +219,221 @@ class DisableResource(Resource):
 
 
 ######################################################################
+#  PATH: /products/{product_id}
+######################################################################
+@api.route("/products/<product_id>")
+@api.param("product_id", "The Product identifier")
+class ProductResource(Resource):
+    """
+    ProductResource class
+
+    Allows the manipulation of a single product
+    GET /product{id} - Returns a product with the id
+    PUT /product{id} - Update a product with the id
+    DELETE /product{id} -  Deletes a product with the id
+    """
+
+    # ------------------------------------------------------------------
+    # RETRIEVE A product
+    # ------------------------------------------------------------------
+    @api.doc("get_products")
+    @api.response(404, "Product not found")
+    @api.marshal_with(product_model)
+    def get(self, product_id):
+        """
+        Retrieve a single product
+
+        This endpoint will return a product based on it's id
+        """
+        app.logger.info("Request to Retrieve a product with id [%s]", product_id)
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"product with id '{product_id}' was not found.",
+            )
+        return product.serialize(), status.HTTP_200_OK
+
+    # ------------------------------------------------------------------
+    # UPDATE AN EXISTING product
+    # ------------------------------------------------------------------
+    @api.doc("update_products")
+    @api.response(404, "product not found")
+    @api.response(400, "The posted product data was not valid")
+    @api.expect(product_model)
+    @api.marshal_with(product_model)
+    # @token_required
+    def put(self, product_id):
+        """
+        Update a product
+
+        This endpoint will update a product
+        """
+        app.logger.info("Request to Update a product with id [%s]", product_id)
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"product with id '{product_id}' was not found.",
+            )
+        app.logger.debug("Payload = %s", api.payload)
+        data = api.payload
+        product.deserialize(data)
+        product.id = product_id
+        product.update()
+        return product.serialize(), status.HTTP_200_OK
+
+    # ------------------------------------------------------------------
+    # DELETE A product
+    # ------------------------------------------------------------------
+    @api.doc("delete_products")
+    @api.response(204, "product deleted")
+    # @token_required
+    def delete(self, product_id):
+        """
+        Delete a product
+
+        This endpoint will delete a product based the id specified in the path
+        """
+        app.logger.info("Request to Delete a productwith id [%s]", product_id)
+        product = Product.find(product_id)
+        if product:
+            product.delete()
+            app.logger.info("product with id [%s] was deleted", product_id)
+
+        return "", status.HTTP_204_NO_CONTENT
+
+
+######################################################################
+#  PATH: /products/{product_id}/like
+######################################################################
+@api.route("/products/<product_id>/like")
+@api.param("product_id", "The Product identifier")
+class LikeResource(Resource):
+    """
+    LikeResource class
+
+    Allows the Liking of a single product
+
+    PUT /product{id}/like - Update a product like with the id
+
+    """
+
+    # ------------------------------------------------------------------
+    # Like A product
+    # ------------------------------------------------------------------
+    @api.doc("like_products")
+    @api.response(404, "Product not found")
+    # @token_required
+    def put(self, product_id):
+        """
+        like a product
+
+        This endpoint will like a product
+        """
+        app.logger.info("Request to like product with id: %s", product_id)
+
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Product with id '{product_id}' was not found.",
+            )
+        product.like += 1
+        product.update()
+        app.logger.info("Like count of product with id [%s] updated.", product.id)
+        return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+#  PATH: /products/{product_id}/adjust_inventory
+######################################################################
+@api.route("/products/<product_id>/adjust_inventory")
+@api.param("product_id", "The Product identifier")
+class AdjustResource(Resource):
+    @api.doc("adjust_products inventory")
+    @api.response(200, "inventory adjusted")
+    @api.expect(product_model)
+    @api.marshal_with(product_model)
+    def put(self, product_id):
+        """
+        Update inventory of a Product
+
+        This endpoint will update a Product based the body that is posted
+        """
+        app.logger.info("Request to adjust inventory with id: %s", product_id)
+
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Product with id '{product_id}' was not found.",
+            )
+
+        data = request.get_json()
+        if "inventory_change" not in data:
+            abort(status.HTTP_400_BAD_REQUEST, "Inventory change value is required.")
+
+        inventory_change = data["inventory_change"]
+        if not isinstance(inventory_change, int):
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Inventory change value must be an integer.",
+            )
+
+        product.inventory += inventory_change
+        if product.inventory <= 0:
+            product.inventory = 0
+            product.available = False
+
+        product.update()
+
+        app.logger.info("Product Inventory with ID [%s] updated.", product.id)
+        return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
+#  PATH: /products/{product_id}/purchase
+######################################################################
+@api.route("/products/<product_id>/purchase")
+@api.param("product_id", "The Product identifier")
+class AdjustResource(Resource):
+    @api.doc("purchase_products")
+    @api.response(200, "product puchased")
+    @api.expect(product_model)
+    @api.marshal_with(product_model)
+    def put(self, product_id):
+        """
+        Purchase a Product
+
+        This endpoint will purchase a Product
+        """
+        app.logger.info("Request to purchase product with id: %s", product_id)
+
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Product with id '{product_id}' was not found.",
+            )
+        if not product.available:
+            abort(
+                status.HTTP_409_CONFLICT,
+                f"Product with id '{product_id}' is not available.",
+            )
+
+        # At this point you would execute code to purchase the pet
+        # For the moment, we will just set them to unavailable
+
+        product.inventory -= 1
+        if product.inventory == 0:
+            product.available = False
+        product.update()
+
+        return product.serialize(), status.HTTP_200_OK
+
+
+######################################################################
 #  PATH: /PRODUCTS
 ######################################################################
 @api.route("/products", strict_slashes=False)
