@@ -219,92 +219,6 @@ class DisableResource(Resource):
 
 
 ######################################################################
-#  PATH: /products/{product_id}
-######################################################################
-@api.route("/products/<product_id>")
-@api.param("product_id", "The Product identifier")
-class ProductResource(Resource):
-    """
-    ProductResource class
-
-    Allows the manipulation of a single product
-    GET /product{id} - Returns a product with the id
-    PUT /product{id} - Update a product with the id
-    DELETE /product{id} -  Deletes a product with the id
-    """
-
-    # ------------------------------------------------------------------
-    # RETRIEVE A product
-    # ------------------------------------------------------------------
-    @api.doc("get_products")
-    @api.response(404, "Product not found")
-    @api.marshal_with(product_model)
-    def get(self, product_id):
-        """
-        Retrieve a single product
-
-        This endpoint will return a product based on it's id
-        """
-        app.logger.info("Request to Retrieve a product with id [%s]", product_id)
-        product = Product.find(product_id)
-        if not product:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                f"product with id '{product_id}' was not found.",
-            )
-        return product.serialize(), status.HTTP_200_OK
-
-    # ------------------------------------------------------------------
-    # UPDATE AN EXISTING product
-    # ------------------------------------------------------------------
-    @api.doc("update_products")
-    @api.response(404, "product not found")
-    @api.response(400, "The posted product data was not valid")
-    @api.expect(product_model)
-    @api.marshal_with(product_model)
-    # @token_required
-    def put(self, product_id):
-        """
-        Update a product
-
-        This endpoint will update a product
-        """
-        app.logger.info("Request to Update a product with id [%s]", product_id)
-        product = Product.find(product_id)
-        if not product:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                f"product with id '{product_id}' was not found.",
-            )
-        app.logger.debug("Payload = %s", api.payload)
-        data = api.payload
-        product.deserialize(data)
-        product.id = product_id
-        product.update()
-        return product.serialize(), status.HTTP_200_OK
-
-    # ------------------------------------------------------------------
-    # DELETE A product
-    # ------------------------------------------------------------------
-    @api.doc("delete_products")
-    @api.response(204, "product deleted")
-    # @token_required
-    def delete(self, product_id):
-        """
-        Delete a product
-
-        This endpoint will delete a product based the id specified in the path
-        """
-        app.logger.info("Request to Delete a productwith id [%s]", product_id)
-        product = Product.find(product_id)
-        if product:
-            product.delete()
-            app.logger.info("product with id [%s] was deleted", product_id)
-
-        return "", status.HTTP_204_NO_CONTENT
-
-
-######################################################################
 #  PATH: /products/{product_id}/like
 ######################################################################
 @api.route("/products/<product_id>/like")
@@ -312,11 +226,6 @@ class ProductResource(Resource):
 class LikeResource(Resource):
     """
     LikeResource class
-
-    Allows the Liking of a single product
-
-    PUT /product{id}/like - Update a product like with the id
-
     """
 
     # ------------------------------------------------------------------
@@ -351,6 +260,10 @@ class LikeResource(Resource):
 @api.route("/products/<product_id>/adjust_inventory")
 @api.param("product_id", "The Product identifier")
 class AdjustResource(Resource):
+    """
+    Adjust Inventory of a Product
+    """
+
     @api.doc("adjust_products inventory")
     @api.response(200, "inventory adjusted")
     @api.expect(product_model)
@@ -397,7 +310,11 @@ class AdjustResource(Resource):
 ######################################################################
 @api.route("/products/<product_id>/purchase")
 @api.param("product_id", "The Product identifier")
-class AdjustResource(Resource):
+class PurchaseResource(Resource):
+    """
+    Purchase a Product
+    """
+
     @api.doc("purchase_products")
     @api.response(200, "product puchased")
     @api.expect(product_model)
