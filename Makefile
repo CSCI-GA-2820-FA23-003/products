@@ -63,5 +63,12 @@ login: ## Login to IBM Cloud using yur api key
 .PHONY: deploy
 depoy: ## Deploy the service on local Kubernetes
 	$(info Deploying service locally...)
-	kubectl apply -f deploy/
+	kubectl apply -f k8s/
+
+.PHONY: imageofproducts
+imageofproducts: ## Deploy the service on local Kubernetes
+	$(info Building docker image of Products...)
+	docker build -t products:1.0 .
+	docker tag products:1.0 quay.io/ja4058/products:1.0
+	docker push quay.io/ja4058/products:1.0
 
