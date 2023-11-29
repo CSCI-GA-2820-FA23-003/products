@@ -194,9 +194,6 @@ class DisableResource(Resource):
     # ------------------------------------------------------------------
     @api.doc("disable_products")
     @api.response(200, "product disabled")
-    @api.expect(product_model)
-    @api.marshal_with(product_model)
-    # @token_required
     def put(self, product_id):
         """
         Disable a product
@@ -215,7 +212,48 @@ class DisableResource(Resource):
         product.available = False
         product.update()
         app.logger.info("The [%s] has been disabled.", product.id)
-        return jsonify(product.serialize()), status.HTTP_200_OK
+        return product.serialize(), status.HTTP_200_OK
+
+
+######################################################################
+#  PATH: /products/{product_id}/enable
+######################################################################
+@api.route("/products/<product_id>/enable")
+@api.param("product_id", "The Product identifier")
+class EnableResource(Resource):
+    """
+    DisableResource class
+
+    Allows the disabling of a single product
+
+    PUT /product{id}/enable - Update a product with the id
+
+    """
+
+    # ------------------------------------------------------------------
+    # Enable A product
+    # ------------------------------------------------------------------
+    @api.doc("enable_products")
+    @api.response(200, "product enabled")
+    def put(self, product_id):
+        """
+        Disable a product
+
+        This endpoint will disable a product
+        """
+        app.logger.info("Request to enable product with id: %s", product_id)
+
+        product = Product.find(product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Product with id '{product_id}' was not found.",
+            )
+        product.disable = False
+        product.available = True
+        product.update()
+        app.logger.info("The [%s] has been enabled.", product.id)
+        return product.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -251,7 +289,7 @@ class LikeResource(Resource):
         product.like += 1
         product.update()
         app.logger.info("Like count of product with id [%s] updated.", product.id)
-        return jsonify(product.serialize()), status.HTTP_200_OK
+        return product.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -264,35 +302,30 @@ class AdjustResource(Resource):
     Adjust Inventory of a Product
     """
 
-    @api.doc("adjust_products inventory")
-    @api.response(200, "inventory adjusted")
-    @api.expect(product_model)
-    @api.marshal_with(product_model)
+    @api.doc(responses={404: "Product not found", 400: "Invalid input", 200: "Success"})
+    @api.expect(
+        api.model(
+            "AdjustInventory",
+            {"inventory_change": fields.Integer(description="Inventory Change")},
+        )
+    )
     def put(self, product_id):
         """
-        Update inventory of a Product
-
-        This endpoint will update a Product based the body that is posted
+        Update a Product's Inventory
         """
         app.logger.info("Request to adjust inventory with id: %s", product_id)
 
         product = Product.find(product_id)
         if not product:
-            abort(
-                status.HTTP_404_NOT_FOUND,
-                f"Product with id '{product_id}' was not found.",
-            )
+            abort(api.abort(404, f"Product with id '{product_id}' was not found."))
 
         data = request.get_json()
         if "inventory_change" not in data:
-            abort(status.HTTP_400_BAD_REQUEST, "Inventory change value is required.")
+            abort(api.abort(400, "Inventory change value is required."))
 
         inventory_change = data["inventory_change"]
         if not isinstance(inventory_change, int):
-            abort(
-                status.HTTP_400_BAD_REQUEST,
-                "Inventory change value must be an integer.",
-            )
+            abort(api.abort(400, "Inventory change value must be an integer."))
 
         product.inventory += inventory_change
         if product.inventory <= 0:
@@ -302,7 +335,53 @@ class AdjustResource(Resource):
         product.update()
 
         app.logger.info("Product Inventory with ID [%s] updated.", product.id)
-        return jsonify(product.serialize()), status.HTTP_200_OK
+        return product.serialize(), status.HTTP_200_OK
+
+
+# class AdjustResource(Resource):
+#     """
+#     Adjust Inventory of a Product
+#     """
+
+#     @api.doc("adjust_products inventory")
+#     @api.response(200, "inventory adjusted")
+#     @api.expect(product_model)
+#     @api.marshal_with(product_model)
+#     def put(self, product_id):
+#         """
+#         Update inventory of a Product
+
+#         This endpoint will update a Product based the body that is posted
+#         """
+#         app.logger.info("Request to adjust inventory with id: %s", product_id)
+
+#         product = Product.find(product_id)
+#         if not product:
+#             abort(
+#                 status.HTTP_404_NOT_FOUND,
+#                 f"Product with id '{product_id}' was not found.",
+#             )
+
+#         data = request.get_json()
+#         if "inventory_change" not in data:
+#             abort(status.HTTP_400_BAD_REQUEST, "Inventory change value is required.")
+
+#         inventory_change = data["inventory_change"]
+#         if not isinstance(inventory_change, int):
+#             abort(
+#                 status.HTTP_400_BAD_REQUEST,
+#                 "Inventory change value must be an integer.",
+#             )
+
+#         product.inventory += inventory_change
+#         if product.inventory <= 0:
+#             product.inventory = 0
+#             product.available = False
+
+#         product.update()
+
+#         app.logger.info("Product Inventory with ID [%s] updated.", product.id)
+#         return jsonify(product.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -411,48 +490,24 @@ class ProductCollection(Resource):
 
 
 ######################################################################
-# DISABLE A PRODUCT
-######################################################################
-@app.route("/products/<int:product_id>/enable", methods=["PUT"])
-def enable_product(product_id):
-    """
-    Enable a Product
-
-    This endpoint will enable a product given the id
-    """
-    app.logger.info("Request to enable product with id: %s", product_id)
-
-    product = Product.find(product_id)
-    if not product:
-        abort(
-            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
-        )
-    product.disable = False
-    product.available = True
-    product.update()
-    app.logger.info("The [%s] has been enabled.", product.id)
-    return jsonify(product.serialize()), status.HTTP_200_OK
-
-
-######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
 
-def check_content_type(content_type):
-    """Checks that the media type is correct"""
-    if "Content-Type" not in request.headers:
-        app.logger.error("No Content-Type specified.")
-        abort(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            f"Content-Type must be {content_type}",
-        )
+# def check_content_type(content_type):
+#     """Checks that the media type is correct"""
+#     if "Content-Type" not in request.headers:
+#         app.logger.error("No Content-Type specified.")
+#         abort(
+#             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+#             f"Content-Type must be {content_type}",
+#         )
 
-    if request.headers["Content-Type"] == content_type:
-        return
+#     if request.headers["Content-Type"] == content_type:
+#         return
 
-    app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
-    abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        f"Content-Type must be {content_type}",
-    )
+#     app.logger.error("Invalid Content-Type: %s", request.headers["Content-Type"])
+#     abort(
+#         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+#         f"Content-Type must be {content_type}",
+#     )

@@ -277,15 +277,19 @@ class TestYourResourceServer(TestCase):
         """It should disable the fetched product"""
         # create a product to disable
         test_product = ProductFactory()
+        test_product.disable = False
+        test_product.available = True
         response = self.client.post(BASE_URL, json=test_product.serialize())
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test product",
+        )
 
         # disable the product
         new_product = response.get_json()
         logging.debug(new_product)
-        response = self.client.put(
-            f"{BASE_URL}/{new_product['id']}/disable", json=new_product
-        )
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}/disable")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["disable"], True)
@@ -297,12 +301,10 @@ class TestYourResourceServer(TestCase):
         response = self.client.post(BASE_URL, json=test_product.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # disable the product
+        # enable the product
         new_product = response.get_json()
         logging.debug(new_product)
-        response = self.client.put(
-            f"{BASE_URL}/{new_product['id']}/enable", json=new_product
-        )
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}/enable")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["disable"], False)
