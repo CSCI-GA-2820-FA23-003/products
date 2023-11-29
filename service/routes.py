@@ -411,6 +411,30 @@ class ProductCollection(Resource):
 
 
 ######################################################################
+# DISABLE A PRODUCT
+######################################################################
+@app.route("/products/<int:product_id>/enable", methods=["PUT"])
+def enable_product(product_id):
+    """
+    Enable a Product
+
+    This endpoint will enable a product given the id
+    """
+    app.logger.info("Request to enable product with id: %s", product_id)
+
+    product = Product.find(product_id)
+    if not product:
+        abort(
+            status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found."
+        )
+    product.disable = False
+    product.available = True
+    product.update()
+    app.logger.info("The [%s] has been enabled.", product.id)
+    return jsonify(product.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
