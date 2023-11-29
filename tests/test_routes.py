@@ -240,6 +240,9 @@ class TestYourResourceServer(TestCase):
         response = self.client.put(f"{BASE_URL}/{product_unavailable.id}/purchase")
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
+        response = self.client.put(f"{BASE_URL}/-1/purchase")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_adjust_inventory(self):
         """It should adjust the inventory of a product"""
         test_product = ProductFactory()
