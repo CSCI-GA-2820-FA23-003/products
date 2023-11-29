@@ -5,7 +5,7 @@ Paths:
 PUT /products/{product_id} - Updates a Product record in the database
 """
 
-from flask import jsonify, request, url_for, abort
+from flask import request, url_for, abort
 from flask_restx import Resource, fields, reqparse, inputs
 from service.common import status  # HTTP Status Codes
 from service.models import Product
