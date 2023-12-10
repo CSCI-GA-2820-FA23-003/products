@@ -34,7 +34,7 @@ spec:
 
       volumes:
       - name: postgres-storage
-          persistentVolumeClaim:
+        persistentVolumeClaim:
             claimName: postgres-data
         #emptyDir: {}
 
