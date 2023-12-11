@@ -22,7 +22,7 @@ Steps file for Product.feature
 For information on Waiting until elements are present in the HTML see:
     https://selenium-python.readthedocs.io/waits.html
 """
-import requests
+import requests, random
 from behave import given
 
 # HTTP Return Codes
@@ -44,16 +44,15 @@ def step_impl(context):
     # load the database with new products
     for row in context.table:
         payload = {
-            "id": random.randint(0, 1000),
             "name": row['name'],
-            "desc": row['desc'],
             "price": float(row['price']),
             "category": row['category'],
-            "inventory": row['inventory'],
-            "like": int(row['like']),
+            "inventory": int(row['inventory']),
+            "available": bool(row['available']),
             "created_date": row['created_date'],
             "modified_date": row['modified_date'],
-            "deleted_date": row['deleted_date']
+            "like": int(row['like']),
+            "disable": bool(row['disable'])
         }
         context.resp = requests.post(rest_endpoint, json=payload)
         assert(context.resp.status_code == HTTP_201_CREATED)
