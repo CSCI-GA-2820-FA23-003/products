@@ -29,10 +29,11 @@ def health():
 @app.route("/")
 def index():
     """Root URL response"""
-    return (
-        "Reminder: return some useful information in json format about the service here",
-        status.HTTP_200_OK,
-    )
+    # return (
+    #     "Reminder: return some useful information in json format about the service here",
+    #     status.HTTP_200_OK,
+    # )
+    return app.send_static_file("index.html")
 
 
 # Define the model so that the docs reflect what can be sent
@@ -404,7 +405,7 @@ class PurchaseResource(Resource):
     """
 
     @api.doc("purchase_products")
-    @api.response(200, "product puchased")
+    @api.response(200, "product purchased")
     @api.expect(product_model)
     @api.marshal_with(product_model)
     def put(self, product_id):
