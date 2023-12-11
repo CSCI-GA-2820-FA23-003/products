@@ -30,12 +30,26 @@ spec:
                   key: password
           volumeMounts:
           - name: postgres-storage
-            mountPath: /var/lib/postgresql/data
+            mountPath: /data
 
       volumes:
       - name: postgres-storage
-        emptyDir: {}
+        persistentVolumeClaim:
+            claimName: postgres-data
+        #emptyDir: {}
 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ""
 
 ---
 apiVersion: v1

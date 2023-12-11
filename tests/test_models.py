@@ -186,7 +186,7 @@ class TestYProduct(unittest.TestCase):
         """It should not deserialize a bad available attribute"""
         test_product = ProductFactory()
         data = test_product.serialize()
-        data["available"] = "False"
+        data["available"] = 99
         product = Product()
         self.assertRaises(DataValidationError, product.deserialize, data)
 

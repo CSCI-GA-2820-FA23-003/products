@@ -18,7 +18,7 @@ from tests.factories import ProductFactory
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/testdb"
 )
-BASE_URL = "/products"
+BASE_URL = "/api/products"
 
 
 ######################################################################
@@ -72,6 +72,13 @@ class TestYourResourceServer(TestCase):
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
     ######################################################################
+
+    def test_health(self):
+        """It should Get the health endpoint"""
+        resp = self.client.get("/health")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["status"], "OK")
 
     def test_index(self):
         """It should call the home page"""
@@ -240,6 +247,9 @@ class TestYourResourceServer(TestCase):
         response = self.client.put(f"{BASE_URL}/{product_unavailable.id}/purchase")
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
 
+        response = self.client.put(f"{BASE_URL}/-1/purchase")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_adjust_inventory(self):
         """It should adjust the inventory of a product"""
         test_product = ProductFactory()
@@ -277,18 +287,38 @@ class TestYourResourceServer(TestCase):
         """It should disable the fetched product"""
         # create a product to disable
         test_product = ProductFactory()
+        test_product.disable = False
+        test_product.available = True
         response = self.client.post(BASE_URL, json=test_product.serialize())
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create test product",
+        )
 
         # disable the product
         new_product = response.get_json()
         logging.debug(new_product)
-        response = self.client.put(
-            f"{BASE_URL}/{new_product['id']}/disable", json=new_product
-        )
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}/disable")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["disable"], True)
+
+    def test_enable_product(self):
+        """It should enable the fetched product"""
+        # create a product to enable
+        test_product = ProductFactory()
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # enable the product
+        new_product = response.get_json()
+        logging.debug(new_product)
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}/enable")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_product = response.get_json()
+        self.assertEqual(updated_product["disable"], False)
+        self.assertEqual(updated_product["available"], True)
 
     ######################################################################
     #  T E S T   S A D   P A T H S
@@ -381,6 +411,17 @@ class TestYourResourceServer(TestCase):
         test_product = ProductFactory()
         response = self.client.put(
             f"{BASE_URL}/{test_product.id}/disable", json=test_product.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
+
+    def test_enable_product_not_found(self):
+        """It should not enable a product that is not found"""
+        test_product = ProductFactory()
+        response = self.client.put(
+            f"{BASE_URL}/{test_product.id}/enable", json=test_product.serialize()
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
