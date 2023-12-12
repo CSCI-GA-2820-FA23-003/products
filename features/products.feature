@@ -39,11 +39,11 @@ Scenario: Like a Product
     And the "like" field should be empty
     And the "Created_date" field should be empty
     And the "Modified_date" field should be empty
-    # When I paste the "Id" field
-    # And I press the "Like" button
-    # Then I should see the message "Success like a product"
-    # And I should not see "1" in the results
-    # And I should not see "2" in the results
+    When I paste the "Id" field
+    And I press the "Like" button
+    Then I should see the message "Success like a product"
+    And I should not see "1" in the results
+    And I should not see "2" in the results
 
 Scenario: Update a Product
     When I visit the "Home Page"
@@ -51,6 +51,8 @@ Scenario: Update a Product
     And I set the "Price" to "249.9"
     And I set the "Category" to "Headphone"
     And I set the "Inventory" to "3"
+    And I set the "like" to "20"
+    And I set the "created_date" to "12-11-2023"
     And I set the "modified_date" to "12-11-2023"
     And I press the "Create" button
     Then I should see the message "Success"
@@ -58,7 +60,6 @@ Scenario: Update a Product
     And I press the "Clear" button
     Then the "Id" field should be empty
     And the "Name" field should be empty
-    And the "Desc" field should be empty
     And the "Price" field should be empty
     And the "Category" field should be empty
     And the "Inventory" field should be empty

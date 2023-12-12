@@ -145,12 +145,61 @@ $(function () {
     });
 
     // ****************************************
+    // Like a Product
+    // ****************************************
+
+    $("#like-btn").click(function () {
+
+        let id = $("#product_id").val();
+        // let name = $("#product_name").val();
+        // let price = $("#product_price").val();
+        // let category = $("#product_category").val();
+        // let inventory = $("#product_inventory").val();
+        // let available = $("#product_available").val() == "true";
+        // let created_date = $("#product_created_date").val();
+        // let modified_date = $("#product_modified_date").val();
+        // let like = $("#product_like").val();
+        // let disable = $("#product_disable").val() == "false";
+
+        // let data = {
+        //     "name": name,
+        //     "price": price,
+        //     "category": category,
+        //     "inventory": inventory,
+        //     "available": available,
+        //     "created_date": created_date,
+        //     "modified_date": modified_date,
+        //     "like": like,
+        //     "disable": disable
+        // }
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/api/products/${id}/like`,
+                // contentType: "application/json",
+                // data: JSON.stringify(data)
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success like a product")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Retrieve a Product
     // ****************************************
 
     $("#retrieve-btn").click(function () {
 
-        let product_id = $("#pet_id").val();
+        let product_id = $("#product_id").val();
 
         $("#flash_message").empty();
 
