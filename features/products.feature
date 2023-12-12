@@ -16,6 +16,15 @@ Scenario: The server is running
     Then I should see "Product RESTful Service" in the title
     And I should not see "404 Not Found"
 
+Scenario: List all products
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "coke" in the results
+    And I should see "milk" in the results
+    And I should not see "kale" in the results
+    And I should see "ice cream" in the results
+
 Scenario: Like a Product
     When I visit the "Home Page"
     And I set the "name" to "Switch"
