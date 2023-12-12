@@ -74,6 +74,7 @@ Scenario: Search through availability
     And I should see "coke" in the results
     And I should see "ice cream" in the results
     And I should not see "Kale" in the results
+    
 
 Scenario: Search through name
     When I visit the "Home Page"
