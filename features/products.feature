@@ -16,7 +16,7 @@ Scenario: The server is running
     Then I should see "Product RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: Create a Product
+    Scenario: Create a Product
     When I visit the "Home Page"
     And I set the "name" to "AA-Batteries"
     And I set the "price" to "19.9"
