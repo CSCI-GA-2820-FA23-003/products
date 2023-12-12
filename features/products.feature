@@ -25,6 +25,36 @@ Scenario: List all products
     And I should not see "kale" in the results
     And I should see "ice cream" in the results
 
+Scenario: Create a Product
+    When I visit the "Home Page"
+    And I set the "name" to "AA-Batteries"
+    And I set the "price" to "19.9"
+    And I set the "category" to "Electronics"
+    And I set the "inventory" to "48"
+    And I set the "created_date" to "12-11-2023"
+    And I set the "modified_date" to "12-11-2023"
+    And I set the "like" to "0"
+    And I select "True" in the "Available" dropdown
+    And I select "False" in the "Disable" dropdown
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "name" field should be empty
+    And the "category" field should be empty
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "AA-Batteries" in the "name" field
+    And I should see "19.9" in the "price" field
+    And I should see "Electronics" in the "category" field
+    And I should see "48" in the "inventory" field
+    And I should see "2023-12-11" in the "created_date" field
+    And I should see "2023-12-11" in the "modified_date" field
+    And I should see "0" in the "like" field
+    And I should see "True" in the "Available" dropdown
+
 Scenario: Like a Product
     When I visit the "Home Page"
     And I set the "name" to "Switch"
