@@ -6,7 +6,7 @@ import os
 # Get configuration from environment
 DATABASE_URI = os.getenv(
     "DATABASE_URI",
-    "postgresql+psycopg[binary]==3.1.12://postgres:postgres@localhost:5432/postgres",
+    "postgresql+psycopg==3.1.12://postgres:postgres@localhost:5432/postgres",
 )
 
 # Configure SQLAlchemy
