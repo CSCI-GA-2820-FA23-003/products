@@ -18,43 +18,38 @@ Scenario: The server is running
 
 Scenario: Like a Product
     When I visit the "Home Page"
-    And I set the "Name" to "Switch"
-    And I set the "Price" to "299.9"
-    And I set the "Category" to "Game device"
-    And I set the "Inventory" to "5"
-    And I set the "Available" to "True"
-    And I set the "Created_date" to "2023-11-10"
-    And I set the "Modified_date" to "2023-11-10"
-    And I set the "Like" to "100"
-    And I set the "Disable" to "False"
+    And I set the "name" to "Switch"
+    And I set the "price" to "299.9"
+    And I set the "category" to "Game device"
+    And I set the "inventory" to "5"
+    And I set the "created_date" to "2023-11-10"
+    And I set the "modified_date" to "2023-11-10"
+    And I set the "like" to "100"
     And I press the "Create" button
     Then I should see the message "Success"
     When I copy the "Id" field
     And I press the "Clear" button
     Then the "Id" field should be empty
     And the "Name" field should be empty
-    And the "Desc" field should be empty
     And the "Price" field should be empty
     And the "Category" field should be empty
     And the "Inventory" field should be empty
     And the "like" field should be empty
     And the "Created_date" field should be empty
     And the "Modified_date" field should be empty
-    # When I paste the "Id" field
-    # And I press the "Like" button
-    # Then I should see the message "Success like a product"
-    # And I should not see "1" in the results
-    # And I should not see "2" in the results
+    When I paste the "Id" field
+    And I press the "Like" button
+    Then I should see the message "Success like a product"
+    And I should not see "1" in the results
+    And I should not see "2" in the results
 
 Scenario: Update a Product
     When I visit the "Home Page"
     And I set the "Name" to "airpods"
-    And I set the "Desc" to "airpods 2nd generation"
     And I set the "Price" to "249.9"
     And I set the "Category" to "Headphone"
     And I set the "Inventory" to "3"
-    And I set the "like" to "0"
-    And I set the "Created_date" to "2023-11-10"
+    And I set the "modified_date" to "2023-11-10"
     And I press the "Create" button
     Then I should see the message "Success"
     When I copy the "Id" field
@@ -68,7 +63,6 @@ Scenario: Update a Product
     And the "like" field should be empty
     And the "Created_date" field should be empty
     And the "Modified_date" field should be empty
-    And the "Deleted_date" field should be empty
     When I paste the "Id" field
     And I press the "Retrieve" button
     Then I should see the message "Success"
