@@ -148,32 +148,41 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: behave-task
+  name: bdd
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/categories: Testing
     tekton.dev/pipelines.minVersion: "0.17.0"
-    tekton.dev/tags: integration, testing, behave
-    tekton.dev/displayName: "Run Behave Tests"
+    tekton.dev/tags: python, behave
+    tekton.dev/displayName: "bdd tests"
     tekton.dev/platforms: "linux/amd64"
 spec:
   workspaces:
     - name: source
+  description: >-
+    This task can be used to perform BDD tests with behave.
+    If you define a secret with the key `database_uri`
+    it will create an environment variable named DATABASE_URI
+    that can be used to connect to a test database.
+  params:
+    - name: BASE_URL
+      description: The url that behave will interact with
+      type: string
   steps:
-    - name: run-behave
-      image: quay.io/rofrano/pipeline-selenium:latest
-      # image: "docker.io/rofrano/nyu-devops-base:fa23"
+    - name: behave
+      image: rofrano/pipeline-selenium:latest
       workingDir: $(workspaces.source.path)
       env:
-       - name: BASE_URL
-         value: https://products-yipeng00-16-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/
+        - name: BASE_URL
+          value: $(params.BASE_URL)
       script: |
         #!/bin/bash
         set -e
+        echo $PATH
+        echo $(params.BASE_URL)
         echo "***** Installing dependencies *****"
         python -m pip install --upgrade pip wheel
         pip install -qr requirements.txt
-        export PATH="$PATH:/home/vscode/.local/bin"
         echo "***** Running Tests *****"
         behave

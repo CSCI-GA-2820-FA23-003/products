@@ -1,7 +1,5 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
-metadata:
-  name: cd-pipeline
 spec:
   params:
     - description: The URL to the git repo
@@ -11,9 +9,18 @@ spec:
       description: The reference (branch or ref)
       name: GIT_REF
       type: string
-    - default: "-vvv --processes=1 --run-coverage --minimum-coverage=95"
+    - default: '-vvv --processes=1 --run-coverage --minimum-coverage=95'
       description: Arguments for green testing
       name: GREEN_ARGS
+      type: string
+    - default: products
+      description: Name of the application
+      name: APP_NAME
+      type: string
+    - default: >-
+        image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest
+      description: The name of the image to build
+      name: IMAGE_NAME
       type: string
   tasks:
     - name: git-clone
@@ -23,29 +30,29 @@ spec:
         - name: revision
           value: $(params.GIT_REF)
         - name: refspec
-          value: ""
+          value: ''
         - name: submodules
-          value: "true"
+          value: 'true'
         - name: depth
-          value: "1"
+          value: '1'
         - name: sslVerify
-          value: "true"
+          value: 'true'
         - name: crtFileName
           value: ca-bundle.crt
         - name: subdirectory
-          value: ""
+          value: ''
         - name: sparseCheckoutDirectories
-          value: ""
+          value: ''
         - name: deleteExisting
-          value: "true"
+          value: 'true'
         - name: httpProxy
-          value: ""
+          value: ''
         - name: httpsProxy
-          value: ""
+          value: ''
         - name: noProxy
-          value: ""
+          value: ''
         - name: verbose
-          value: "true"
+          value: 'true'
         - name: gitInitImage
           value: >-
             registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:1a50511583fc02a27012d17d942e247813404104ddd282d7e26f99765174392c
@@ -57,10 +64,26 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-workspace
-    - name: pylint
+    - name: testing
+      params:
+        - name: ARGS
+          value: $(params.GREEN_ARGS)
+        - name: SECRET_NAME
+          value: postgres-creds
+        - name: SECRET_KEY
+          value: database_uri
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: green
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+    - name: linting
       params:
         - name: image
-          value: "docker.io/python:3.11-slim"
+          value: 'docker.io/rofrano/nyu-devops-base:fa23'
         - name: path
           value: service
         - name: requirements_file
@@ -77,19 +100,51 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-workspace
-    - name: testing
+    - name: buildah
       params:
-        - name: ARGS
-          value: $(params.GREEN_ARGS)
-        - name: SECRET_NAME
-          value: postgres-creds
-        - name: SECRET_KEY
-          value: database_uri
+        - name: IMAGE
+          value: $(params.IMAGE_NAME)
+        - name: BUILDER_IMAGE
+          value: >-
+            registry.redhat.io/rhel8/buildah@sha256:00795fafdab9bbaa22cd29d1faa1a01e604e4884a2c935c1bf8e3d1f0ad1c084
+        - name: STORAGE_DRIVER
+          value: vfs
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: CONTEXT
+          value: .
+        - name: TLSVERIFY
+          value: 'true'
+        - name: FORMAT
+          value: oci
+        - name: BUILD_EXTRA_ARGS
+          value: ''
+        - name: PUSH_EXTRA_ARGS
+          value: ''
+        - name: SKIP_PUSH
+          value: 'false'
       runAfter:
-        - git-clone
+        - testing
+        - linting
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+    - name: deploy-image
+      params:
+        - name: old_image_name
+          value: 'cluster-registry:32000/products:latest'
+        - name: image_name
+          value: $(params.IMAGE_NAME)
+        - name: manifest_dir
+          value: k8s
+      runAfter:
+        - buildah
       taskRef:
         kind: Task
-        name: green
+        name: deploy-image
       workspaces:
         - name: source
           workspace: pipeline-workspace
