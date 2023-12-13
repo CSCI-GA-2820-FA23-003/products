@@ -97,9 +97,11 @@ You should be able to reach the service at: http://localhost:8000. The port that
 
 ## Steps for Openshift
 1. Deploy the postgresql
-   `oc apply -f k8s/postgresql.yaml`
+   `oc apply -f .tekton/postgresql.yaml`
 2. Deploy the pipeline
    `oc apply -f .tekton/pipeline.yaml`
+3. Deploy the tasks
+    `oc apply -f .tekton/tasks.yaml`
 
 ## License
 
