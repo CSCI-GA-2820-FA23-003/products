@@ -134,3 +134,15 @@ Scenario: Delete a Product
     And I press the "Search" button
     Then I should see the message "Success"
     And I should not see "coke" in the results
+
+Scenario: Disable a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "coke"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "coke" in the results
+    And I should not see "milk" in the results
+    When I press the "Disable" button
+    Then I should see the message "Success disable a product"
+    And I should see "True" in the "Disable" dropdown
+
