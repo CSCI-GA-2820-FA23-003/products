@@ -148,5 +148,18 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-workspace
+    - name: bdd
+      params:
+        - name: BASE_URL
+          value: >-
+            https://products-yipeng00-16-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com
+      runAfter:
+        - deploy-image
+      taskRef:
+        kind: Task
+        name: bdd
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
   workspaces:
     - name: pipeline-workspace
