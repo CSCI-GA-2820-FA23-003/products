@@ -388,7 +388,7 @@ $(function () {
             if (queryString == ""){
                 flash_message("Success list all products")
             }else{
-                flash_message("Success")
+                flash_message("Success query products by " + queryString)
             }
             
         });
