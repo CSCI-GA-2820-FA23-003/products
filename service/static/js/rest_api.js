@@ -61,7 +61,7 @@ $(function () {
         let created_date = $("#product_created_date").val();
         let modified_date = $("#product_modified_date").val();
         let like = $("#product_like").val();
-        let disable = $("#product_disable").val() == "false";
+        let disable = $("#product_disable").val() == "true";
 
         let data = {
             "name": name,
@@ -110,7 +110,7 @@ $(function () {
         let created_date = $("#product_created_date").val();
         let modified_date = $("#product_modified_date").val();
         let like = $("#product_like").val();
-        let disable = $("#product_disable").val() == "false";
+        let disable = $("#product_disable").val() == "true";
 
         let data = {
             "name": name,
@@ -235,7 +235,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/products/${product_id}`,
+            url: `api/products/${product_id}`,
             contentType: "application/json",
             data: '',
         })
@@ -268,7 +268,7 @@ $(function () {
 
         let name = $("#product_name").val();
         let category = $("#product_category").val();
-        let available = $("#pet_available").val() == "true";
+        let available = $("#product_available").val() == "true";
 
         let queryString = ""
 
