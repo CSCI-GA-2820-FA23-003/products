@@ -213,7 +213,7 @@ Scenario: Like a Product
     Then I should see the message "Success list all products"
     And I should see "12" in the results
 
-Scenario: Disable a Product
+Scenario: Disable a product
     When I visit the "Home Page"
     And I set the "Name" to "coke"
     And I press the "Search" button
@@ -223,4 +223,17 @@ Scenario: Disable a Product
     When I press the "Disable" button
     Then I should see the message "Success disable a product"
     And I should see "True" in the "Disable" dropdown
+
+Scenario: Disable a product without id
+    When I visit the "Home Page"
+    And I set the "Id" to "-1"
+    And I press the "Disable" button
+    Then I should see the message "Fail disable the product (product -1 does not exist)"
+
+Scenario: Disable a product without id
+    When I visit the "Home Page"
+    And I press the "Disable" button
+    Then I should see the message "Fail disable the product (product id is not provided)"
+
+
 
