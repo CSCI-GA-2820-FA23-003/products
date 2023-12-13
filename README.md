@@ -127,7 +127,7 @@ docker tag products:1.0 cluster-registry:32000/products:1.0
 docker push cluster-registry:32000/products:1.0
 
 Apply to local cluster:
-Kubectl apply -f k8s/.
+kubectl apply -f k8s/.
 
 
 
