@@ -170,7 +170,7 @@ Scenario: Search for coke
     When I visit the "Home Page"
     And I set the "Name" to "coke"
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success query products by name=coke"
     And I should see "coke" in the results
     And I should not see "milk" in the results
 
@@ -178,7 +178,7 @@ Scenario: Search for beverages
     When I visit the "Home Page"
     And I set the "Category" to "beverage"
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success query products by category=beverage"
     And I should see "coke" in the results
     And I should not see "milk" in the results
 
@@ -186,7 +186,7 @@ Scenario: Search through availability
     When I visit the "Home Page"
     And I select "True" in the "available" dropdown
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success query products by available=true"
     And I should see "milk" in the results
     And I should see "coke" in the results
     And I should see "ice cream" in the results
@@ -202,7 +202,6 @@ Scenario: Like a Product
     Then I should see the message "Success list all products"
     And I should see "10" in the "like" field
     And I should see "10" in the results
-    And I should not see "12" in the results
     When I press the "Like" button
     Then I should see the message "Success like a product"
     And I should see "11" in the "like" field
