@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer
+  name: products
   labels:
-    app: customer
+    app: products
 spec:
   replicas: 1
   strategy:
@@ -13,15 +13,15 @@ spec:
       maxUnavailable: 50%
   selector:
     matchLabels:
-      app: customer
+      app: products
   template:
     metadata:
       labels:
-        app: customer
+        app: products
     spec:
       restartPolicy: Always
       containers:
-        - name: customer
+        - name: products
           image: cluster-registry:32000/products:1.0
           imagePullPolicy: IfNotPresent
           ports:
