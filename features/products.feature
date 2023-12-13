@@ -55,6 +55,14 @@ Scenario: List all products
     And I should see "milk" in the results
     And I should not see "apple" in the results
 
+Scenario: Search for coke
+    When I visit the "Home Page"
+    And I set the "Name" to "coke"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "coke" in the results
+    And I should not see "milk" in the results
+
 Scenario: Search for beverages
     When I visit the "Home Page"
     And I set the "Category" to "beverage"
@@ -65,32 +73,21 @@ Scenario: Search for beverages
 
 Scenario: Like a Product
     When I visit the "Home Page"
-    And I set the "name" to "Switch"
-    And I set the "price" to "299.9"
-    And I set the "category" to "Game device"
-    And I set the "inventory" to "5"
-    And I set the "created_date" to "12-11-2023"
-    And I set the "modified_date" to "12-11-2023"
-    And I set the "like" to "100"
-    And I select "True" in the "Available" dropdown
-    And I select "False" in the "Disable" dropdown
-    And I press the "Create" button
+    And I press the "Search" button
     Then I should see the message "Success"
-    When I copy the "Id" field
-    And I press the "Clear" button
-    Then the "Id" field should be empty
-    And the "Name" field should be empty
-    And the "Price" field should be empty
-    And the "Category" field should be empty
-    And the "Inventory" field should be empty
-    And the "like" field should be empty
-    And the "Created_date" field should be empty
-    And the "Modified_date" field should be empty
-    When I paste the "Id" field
-    And I press the "Like" button
+    And I should see "10" in the "like" field
+    And I should see "10" in the results
+    And I should not see "12" in the results
+    When I press the "Like" button
     Then I should see the message "Success like a product"
-    And I should not see "1" in the results
-    And I should not see "2" in the results
+    And I should see "11" in the "like" field
+    When I press the "Like" button
+    Then I should see the message "Success like a product"
+    And I should see "12" in the "like" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "12" in the results
 
 Scenario: Update a Product
     When I visit the "Home Page"

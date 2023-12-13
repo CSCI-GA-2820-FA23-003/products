@@ -80,7 +80,11 @@ product_model = api.inherit(
 # query string arguments
 product_args = reqparse.RequestParser()
 product_args.add_argument(
-    "name", type=str, location="args", required=False, help="List Products by name"
+    "name",
+    type=str,
+    location="args",
+    required=False,
+    help="List Products by name",
 )
 product_args.add_argument(
     "category",
