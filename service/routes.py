@@ -62,7 +62,7 @@ create_model = api.model(
             description="The number of likes byt the previous purchasers of the Product",
         ),
         "disable": fields.Boolean(
-            required=True, description="Is the Product available for purchase?"
+            required=True, description="Is the Product disable for purchase?"
         ),
     },
 )
@@ -432,7 +432,7 @@ class PurchaseResource(Resource):
                 f"Product with id '{product_id}' is not available.",
             )
 
-        # At this point you would execute code to purchase the pet
+        # At this point you would execute code to purchase the product
         # For the moment, we will just set them to unavailable
 
         product.inventory -= 1
@@ -468,6 +468,9 @@ class ProductCollection(Resource):
         elif args["name"]:
             app.logger.info("Filtering by name: %s", args["name"])
             products = Product.find_by_name(args["name"])
+        elif args["available"]:
+            app.logger.info("Filtering by availability: %s", args["available"])
+            products = Product.find_by_availability(args["available"])
         else:
             app.logger.info("Returning unfiltered list.")
             products = Product.all()
