@@ -55,6 +55,26 @@ Scenario: Create a Product
     And I should see "0" in the "like" field
     And I should see "True" in the "Available" dropdown
 
+Scenario: Search through category
+    When I visit the "Home Page"
+    And I set the "Category" to "dairy"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "milk" in the results
+    And I should not see "coke" in the results
+    And I should not see "ice cream" in the results
+    And I should not see "Kale" in the results
+
+Scenario: Search through name
+    When I visit the "Home Page"
+    And I set the "name" to "milk"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "milk" in the results
+    And I should not see "coke" in the results
+    And I should not see "ice cream" in the results
+    And I should not see "Kale" in the results
+
 Scenario: Like a Product
     When I visit the "Home Page"
     And I set the "name" to "Switch"
@@ -64,7 +84,7 @@ Scenario: Like a Product
     And I set the "created_date" to "12-11-2023"
     And I set the "modified_date" to "12-11-2023"
     And I set the "like" to "100"
-    And I select "True" in the "Available" dropdown
+    And I select "True" in the "available" dropdown
     And I select "False" in the "Disable" dropdown
     And I press the "Create" button
     Then I should see the message "Success"
