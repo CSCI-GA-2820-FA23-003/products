@@ -269,22 +269,28 @@ $(function () {
         let product_id = $("#product_id").val();
 
         $("#flash_message").empty();
-
-        let ajax = $.ajax({
-            type: "DELETE",
-            url: `api/products/${product_id}`,
-            contentType: "application/json",
-            data: '',
-        })
-
-        ajax.done(function(res){
+        if (product_id!=""){
+            let ajax = $.ajax({
+                type: "DELETE",
+                url: `api/products/${product_id}`,
+                contentType: "application/json",
+                data: '',
+            })
+    
+            ajax.done(function(res){
+                clear_form_data()
+                flash_message("Success delete the product")
+            });
+    
+            ajax.fail(function(res){
+                clear_form_data()
+                flash_message("Fail delete the product (product " + product_id + " does not exist)")
+            });
+        }else{
             clear_form_data()
-            flash_message("Product has been Deleted!")
-        });
-
-        ajax.fail(function(res){
-            flash_message("Server error!")
-        });
+            flash_message("Fail delete the product (product id is not provided)")
+        }
+        
     });
 
     // ****************************************
