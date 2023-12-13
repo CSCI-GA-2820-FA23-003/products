@@ -293,7 +293,7 @@ $(function () {
 
         let name = $("#product_name").val();
         let category = $("#product_category").val();
-        let available = $("#product_available").val() == "true";
+        let available = $("#product_available").val();
 
         let queryString = ""
 
@@ -307,7 +307,15 @@ $(function () {
                 queryString += 'category=' + category
             }
         }
-        if (available) {
+
+        if (available === "true") {
+            if (queryString.length > 0) {
+                queryString += '&available=' + available
+            } else {
+                queryString += 'available=' + available
+            }
+        }
+        if(available === "false"){
             if (queryString.length > 0) {
                 queryString += '&available=' + available
             } else {

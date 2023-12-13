@@ -49,11 +49,11 @@ def step_impl(context):
             "price": float(row["price"]),
             "category": row["category"],
             "inventory": int(row["inventory"]),
-            "available": bool(row["available"]),
+            "available": row["available"] in ["True", "true", "1"],
             "created_date": row["created_date"],
             "modified_date": row["modified_date"],
             "like": int(row["like"]),
-            "disable": bool(row["disable"]),
+            "disable": row["available"] in ["True", "true", "1"],
         }
         context.resp = requests.post(rest_endpoint, json=payload)
         assert context.resp.status_code == HTTP_201_CREATED

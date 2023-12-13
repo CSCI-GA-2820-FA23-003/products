@@ -168,3 +168,17 @@ class Product(db.Model):
         """
         logger.info("Processing category query for %s ...", category)
         return cls.query.filter(cls.category == category)
+
+    @classmethod
+    def find_by_availability(cls, available: bool) -> list:
+        """Returns all of the Products in a category
+
+        :param category: the category of the Products you want to match
+        :type category: str
+
+        :return: a collection of Products in that category
+        :rtype: list
+
+        """
+        logger.info("Query that finds Products by their availability")
+        return cls.query.filter(cls.available == available)
