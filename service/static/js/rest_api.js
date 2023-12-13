@@ -244,11 +244,11 @@ $(function () {
     
             ajax.fail(function(res){
                 clear_form_data()
-                flash_message("Product not existed")
+                flash_message("Fail retrieve the product (product " + product_id + " does not exist)")
             });
         }else{
             clear_form_data()
-            flash_message("Please enter product id")
+            flash_message("Fail retrieve the product (product id is not provided)")
         }
     });
 
@@ -377,7 +377,12 @@ $(function () {
                 update_form_data(firstProduct)
             }
 
-            flash_message("Success")
+            if (queryString == ""){
+                flash_message("Success list all products")
+            }else{
+                flash_message("Success")
+            }
+            
         });
 
         ajax.fail(function(res){

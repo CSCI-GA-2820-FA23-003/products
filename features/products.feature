@@ -16,6 +16,10 @@ Scenario: The server is running
     Then I should see "Product RESTful Service" in the title
     And I should not see "404 Not Found"
 
+
+######################################################################
+# Create Scenarios
+######################################################################
 Scenario: Create a Product
     When I visit the "Home Page"
     And I set the "name" to "AA-Batteries"
@@ -47,10 +51,14 @@ Scenario: Create a Product
     And I should see "True" in the "Available" dropdown
     And I should see "False" in the "Disable" dropdown
 
+
+######################################################################
+# Read Scenarios
+######################################################################
 Scenario: Read a product existed
     When I visit the "Home Page"
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success list all products"
     When I copy the "Id" field
     And I press the "Clear" button
     When I paste the "Id" field
@@ -61,23 +69,74 @@ Scenario: Read a product existed
 Scenario: Read a product without id
     When I visit the "Home Page"
     And I press the "Retrieve" button
-    Then I should see the message "Please enter product id"
+    Then I should see the message "Fail retrieve the product (product id is not provided)"
 
 Scenario: Read a product not exisetd
     When I visit the "Home Page"
     And I set the "Id" to "-1"
     And I press the "Retrieve" button
-    Then I should see the message "Product not existed"
+    Then I should see the message "Fail retrieve the product (product -1 does not exist)"
 
 
+######################################################################
+# List Scenarios
+######################################################################
 Scenario: List all products
     When I visit the "Home Page"
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success list all products"
     And I should see "coke" in the results
     And I should see "milk" in the results
     And I should not see "apple" in the results
 
+
+######################################################################
+# Update Scenarios
+######################################################################
+Scenario: Update a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "coke"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "coke" in the "Name" field
+    And I should see "beverage" in the "Category" field
+    When I change "Name" to "fanta"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success retrieve the product"
+    And I should see "fanta" in the "Name" field
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success list all products"
+    And I should see "fanta" in the results
+    And I should not see "coke" in the results
+
+
+######################################################################
+# Delete Scenarios
+######################################################################
+Scenario: Delete a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "coke"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "coke" in the "Name" field
+    And I should see "beverage" in the "Category" field
+    When I press the "Delete" button
+    Then I should see the message "Product has been Deleted!"
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success list all products"
+    And I should not see "coke" in the results
+
+
+######################################################################
+# Query Scenarios
+######################################################################
 Scenario: Search for coke
     When I visit the "Home Page"
     And I set the "Name" to "coke"
@@ -104,10 +163,14 @@ Scenario: Search through availability
     And I should see "ice cream" in the results
     And I should not see "kale" in the results
 
+
+######################################################################
+# Action Scenarios
+######################################################################
 Scenario: Like a Product
     When I visit the "Home Page"
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success list all products"
     And I should see "10" in the "like" field
     And I should see "10" in the results
     And I should not see "12" in the results
@@ -119,44 +182,8 @@ Scenario: Like a Product
     And I should see "12" in the "like" field
     When I press the "Clear" button
     And I press the "Search" button
-    Then I should see the message "Success"
+    Then I should see the message "Success list all products"
     And I should see "12" in the results
-
-Scenario: Update a Product
-    When I visit the "Home Page"
-    And I set the "Name" to "coke"
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should see "coke" in the "Name" field
-    And I should see "beverage" in the "Category" field
-    When I change "Name" to "fanta"
-    And I press the "Update" button
-    Then I should see the message "Success"
-    When I copy the "Id" field
-    And I press the "Clear" button
-    And I paste the "Id" field
-    And I press the "Retrieve" button
-    Then I should see the message "Success retrieve the product"
-    And I should see "fanta" in the "Name" field
-    When I press the "Clear" button
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should see "fanta" in the results
-    And I should not see "coke" in the results
-
-Scenario: Delete a Product
-    When I visit the "Home Page"
-    And I set the "Name" to "coke"
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should see "coke" in the "Name" field
-    And I should see "beverage" in the "Category" field
-    When I press the "Delete" button
-    Then I should see the message "Product has been Deleted!"
-    When I press the "Clear" button
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should not see "coke" in the results
 
 Scenario: Disable a Product
     When I visit the "Home Page"
