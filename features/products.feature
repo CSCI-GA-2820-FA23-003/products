@@ -36,7 +36,7 @@ Scenario: Create a Product
     And the "category" field should be empty
     When I paste the "Id" field
     And I press the "Retrieve" button
-    Then I should see the message "Success"
+    Then I should see the message "Success retrieve the product"
     And I should see "AA-Batteries" in the "name" field
     And I should see "19.9" in the "price" field
     And I should see "Electronics" in the "category" field
@@ -46,6 +46,29 @@ Scenario: Create a Product
     And I should see "0" in the "like" field
     And I should see "True" in the "Available" dropdown
     And I should see "False" in the "Disable" dropdown
+
+Scenario: Read a product existed
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success retrieve the product"
+    Then I should see "coke" in the "name" field
+
+Scenario: Read a product without id
+    When I visit the "Home Page"
+    And I press the "Retrieve" button
+    Then I should see the message "Please enter product id"
+
+Scenario: Read a product not exisetd
+    When I visit the "Home Page"
+    And I set the "Id" to "-1"
+    And I press the "Retrieve" button
+    Then I should see the message "Product not existed"
+
 
 Scenario: List all products
     When I visit the "Home Page"
@@ -113,7 +136,7 @@ Scenario: Update a Product
     And I press the "Clear" button
     And I paste the "Id" field
     And I press the "Retrieve" button
-    Then I should see the message "Success"
+    Then I should see the message "Success retrieve the product"
     And I should see "fanta" in the "Name" field
     When I press the "Clear" button
     And I press the "Search" button
