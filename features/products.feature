@@ -119,7 +119,7 @@ Scenario: Update a Product
 ######################################################################
 # Delete Scenarios
 ######################################################################
-Scenario: Delete a Product
+Scenario: Delete a product
     When I visit the "Home Page"
     And I set the "Name" to "coke"
     And I press the "Search" button
@@ -127,11 +127,22 @@ Scenario: Delete a Product
     And I should see "coke" in the "Name" field
     And I should see "beverage" in the "Category" field
     When I press the "Delete" button
-    Then I should see the message "Product has been Deleted!"
+    Then I should see the message "Success delete the product"
     When I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success list all products"
     And I should not see "coke" in the results
+
+Scenario: Delete a product without id
+    When I visit the "Home Page"
+    And I press the "Delete" button
+    Then I should see the message "Fail delete the product (product id is not provided)"
+
+Scenario: Delete a product not exisetd
+    When I visit the "Home Page"
+    And I set the "Id" to "-1"
+    And I press the "Delete" button
+    Then I should see the message "Fail delete the product (product -1 does not exist)"
 
 
 ######################################################################
