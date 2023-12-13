@@ -258,6 +258,11 @@ class TestYourResourceServer(TestCase):
         response = self.client.get(f"{BASE_URL}/{test_product.id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_delete_product_not_found(self):
+        """It should Delete a Product"""
+        response = self.client.delete(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_purchase_a_product(self):
         """It should Purchase a Product"""
         product_available = ProductFactory()

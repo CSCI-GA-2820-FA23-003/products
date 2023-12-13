@@ -179,12 +179,16 @@ class ProductResource(Resource):
 
         This endpoint will delete a product based the id specified in the path
         """
-        app.logger.info("Request to Delete a productwith id [%s]", product_id)
+        app.logger.info("Request to Delete a product with id [%s]", product_id)
         product = Product.find(product_id)
-        if product:
-            product.delete()
-            app.logger.info("product with id [%s] was deleted", product_id)
+        if not product:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"product with id '{product_id}' was not found.",
+            )
 
+        product.delete()
+        app.logger.info("product with id [%s] was deleted", product_id)
         return "", status.HTTP_204_NO_CONTENT
 
 
