@@ -125,6 +125,57 @@ class TestYourResourceServer(TestCase):
         for product in data:
             self.assertEqual(product["name"], test_name)
 
+    # def test_query_product_list_by_availability(self):
+    #     """It should Query Products by Availability"""
+    #     products = self._create_products(10)
+    #     test_available = products[0].available
+    #     available_products = [
+    #         product for product in products if product.available == test_available
+    #     ]
+    #     response = self.client.get(
+    #         BASE_URL, query_string=f"available={quote_plus(test_available)}"
+    #     )
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     data = response.get_json()
+    #     self.assertEqual(len(data), len(available_products))
+    #     # check the data just to be sure
+    #     for product in data:
+    #         self.assertEqual(product["available"], test_available)
+
+    def test_query_by_availability(self):
+        """Query Products by availability"""
+        products = self._create_products(10)
+        available_products = [
+            product for product in products if product.available is True
+        ]
+        unavailable_products = [
+            product for product in products if product.available is False
+        ]
+        available_count = len(available_products)
+        unavailable_count = len(unavailable_products)
+        logging.debug("Available products [%d] %s", available_count, available_products)
+        logging.debug(
+            "Unavailable products [%d] %s", unavailable_count, unavailable_products
+        )
+
+        # test for available
+        resp = self.client.get(BASE_URL, query_string="available=true")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), available_count)
+        # check the data just to be sure
+        for product in data:
+            self.assertEqual(product["available"], True)
+
+        # test for unavailable
+        resp = self.client.get(BASE_URL, query_string="available=false")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), unavailable_count)
+        # check the data just to be sure
+        for product in data:
+            self.assertEqual(product["available"], False)
+
     def test_get_product(self):
         """It should Get a single Product"""
         # get the id of a product

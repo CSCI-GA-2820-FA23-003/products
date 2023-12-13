@@ -468,7 +468,7 @@ class ProductCollection(Resource):
         elif args["name"]:
             app.logger.info("Filtering by name: %s", args["name"])
             products = Product.find_by_name(args["name"])
-        elif args["available"]:
+        elif args["available"] is not None:
             app.logger.info("Filtering by availability: %s", args["available"])
             products = Product.find_by_availability(args["available"])
         else:
