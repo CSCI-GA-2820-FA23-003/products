@@ -61,7 +61,7 @@ $(function () {
         let created_date = $("#product_created_date").val();
         let modified_date = $("#product_modified_date").val();
         let like = $("#product_like").val();
-        let disable = $("#product_disable").val() == "false";
+        let disable = $("#product_disable").val() == "true";
 
         let data = {
             "name": name,
@@ -110,7 +110,7 @@ $(function () {
         let created_date = $("#product_created_date").val();
         let modified_date = $("#product_modified_date").val();
         let like = $("#product_like").val();
-        let disable = $("#product_disable").val() == "false";
+        let disable = $("#product_disable").val() == "true";
 
         let data = {
             "name": name,
@@ -194,6 +194,31 @@ $(function () {
     });
 
     // ****************************************
+    // Disable a Product
+    // ****************************************
+
+    $("#disable-btn").click(function () {
+
+        let id = $("#product_id").val();
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/api/products/${id}/disable`
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success disable a product")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Retrieve a Product
     // ****************************************
 
@@ -235,7 +260,7 @@ $(function () {
 
         let ajax = $.ajax({
             type: "DELETE",
-            url: `/products/${product_id}`,
+            url: `api/products/${product_id}`,
             contentType: "application/json",
             data: '',
         })
@@ -268,7 +293,7 @@ $(function () {
 
         let name = $("#product_name").val();
         let category = $("#product_category").val();
-        let available = $("#pet_available").val() == "true";
+        let available = $("#product_available").val();
 
         let queryString = ""
 
@@ -282,7 +307,15 @@ $(function () {
                 queryString += 'category=' + category
             }
         }
-        if (available) {
+
+        if (available === "true") {
+            if (queryString.length > 0) {
+                queryString += '&available=' + available
+            } else {
+                queryString += 'available=' + available
+            }
+        }
+        if(available === "false"){
             if (queryString.length > 0) {
                 queryString += '&available=' + available
             } else {
