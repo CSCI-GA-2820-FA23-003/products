@@ -194,6 +194,31 @@ $(function () {
     });
 
     // ****************************************
+    // Disable a Product
+    // ****************************************
+
+    $("#disable-btn").click(function () {
+
+        let id = $("#product_id").val();
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/api/products/${id}/disable`
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success disable a product")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Retrieve a Product
     // ****************************************
 
