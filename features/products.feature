@@ -93,7 +93,7 @@ Scenario: List all products
 ######################################################################
 # Update Scenarios
 ######################################################################
-Scenario: Update a Product
+Scenario: Update a product
     When I visit the "Home Page"
     And I set the "Name" to "coke"
     And I press the "Search" button
@@ -102,7 +102,7 @@ Scenario: Update a Product
     And I should see "beverage" in the "Category" field
     When I change "Name" to "fanta"
     And I press the "Update" button
-    Then I should see the message "Success"
+    Then I should see the message "Success update the product"
     When I copy the "Id" field
     And I press the "Clear" button
     And I paste the "Id" field
@@ -115,6 +115,24 @@ Scenario: Update a Product
     And I should see "fanta" in the results
     And I should not see "coke" in the results
 
+Scenario: Update a product without id
+    When I visit the "Home Page"
+    And I press the "Update" button
+    Then I should see the message "Fail update the product (product id is not provided)"
+
+Scenario: Update a product not exisetd
+    When I visit the "Home Page"
+     And I press the "Search" button
+    And I set the "Id" to "-1"
+    And I press the "Update" button
+    Then I should see the message "Fail update the product (product -1 does not exist)"
+    
+Scenario: Update a product set availability wrong
+    When I visit the "Home Page"
+    And I press the "Search" button
+    And I select "All" in the "Available" dropdown
+    And I press the "Update" button
+    Then I should see the message "Fail update the product (product availability should be either True or False)"
 
 ######################################################################
 # Delete Scenarios

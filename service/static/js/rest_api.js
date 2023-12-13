@@ -106,42 +106,50 @@ $(function () {
         let price = $("#product_price").val();
         let category = $("#product_category").val();
         let inventory = $("#product_inventory").val();
-        let available = $("#product_available").val() == "true";
+        let available = $("#product_available").val();
         let created_date = $("#product_created_date").val();
         let modified_date = $("#product_modified_date").val();
         let like = $("#product_like").val();
-        let disable = $("#product_disable").val() == "true";
+        let disable = $("#product_disable").val();
 
         let data = {
             "name": name,
             "price": price,
             "category": category,
             "inventory": inventory,
-            "available": available,
+            "available": available == "true",
             "created_date": created_date,
             "modified_date": modified_date,
             "like": like,
-            "disable": disable
+            "disable": disable == "true"
         }
 
         $("#flash_message").empty();
-
-        let ajax = $.ajax({
-                type: "PUT",
-                url: `/api/products/${id}`,
-                contentType: "application/json",
-                data: JSON.stringify(data)
-            })
-
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
-
+        if (id != ""){
+            if(available != "all"){
+                let ajax = $.ajax({
+                    type: "PUT",
+                    url: `/api/products/${id}`,
+                    contentType: "application/json",
+                    data: JSON.stringify(data)
+                })
+    
+                ajax.done(function(res){
+                    update_form_data(res)
+                    flash_message("Success update the product")
+                });
+    
+                ajax.fail(function(res){
+                    flash_message("Fail update the product (product " + id + " does not exist)")
+                });
+            }else{
+                flash_message("Fail update the product (product availability should be either True or False)")
+            }
+        }else{
+            clear_form_data()
+            flash_message("Fail update the product (product id is not provided)")
+        }
+        
     });
 
     // ****************************************
