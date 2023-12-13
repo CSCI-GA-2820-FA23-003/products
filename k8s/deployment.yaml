@@ -22,7 +22,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: products
-        image: cluster-registry:32000/products:1.0
+        image: cluster-registry:32000/products:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -35,8 +35,8 @@ spec:
                 key: database_uri
         resources:
           limits:
-            cpu: "0.25"
-            memory: "64Mi"
+            cpu: "0.50"
+            memory: "128Mi"
           requests:
-            cpu: "0.10"
-            memory: "32Mi"
+            cpu: "0.20"
+            memory: "64Mi"
