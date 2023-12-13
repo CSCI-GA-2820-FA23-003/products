@@ -209,20 +209,24 @@ $(function () {
 
         let id = $("#product_id").val();
         $("#flash_message").empty();
-
-        let ajax = $.ajax({
+        if (id != ""){
+            let ajax = $.ajax({
                 type: "PUT",
                 url: `/api/products/${id}/disable`
             })
 
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success disable a product")
-        });
+            ajax.done(function(res){
+                update_form_data(res)
+                flash_message("Success disable a product")
+            });
 
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
+            ajax.fail(function(res){
+                flash_message("Fail disable the product (product " + id + " does not exist)")
+            });
+        }else{
+            flash_message("Fail disable the product (product id is not provided)")
+        }
+        
 
     });
 
