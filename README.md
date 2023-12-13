@@ -95,6 +95,12 @@ You should be able to reach the service at: http://localhost:8000. The port that
 | purchase_products | PUT     | /products/{product_id}/purchase |
 | update_product    | PUT     | /products//products/{product_id} |
 
+## Steps for Openshift
+1. Deploy the postgresql
+   `oc apply -f k8s/postgresql.yaml`
+2. Deploy the pipeline
+   `oc apply -f .tekton/pipeline.yaml`
+
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
