@@ -8,7 +8,7 @@
 
 ## Overview
 
-This project template contains starter code for your class project. The `/service` folder contains your `models.py` file for your model and a `routes.py` file for your service. The `/tests` folder has test case starter code for testing the model and the service separately. All you need to do is add your functionality. You can use the [lab-flask-tdd](https://github.com/nyu-devops/lab-flask-tdd) for code examples to copy from.
+This project is a demo of CICD using Tekton pipeline on an OpenShift cluster. The `/service` folder contains your `models.py` file for your model and a `routes.py` file for your service. The `/tests` folder has test case starter code for testing the model and the service separately. All you need to do is add your functionality. You can use the [lab-flask-tdd](https://github.com/nyu-devops/lab-flask-tdd) for code examples to copy from.
 
 ## Automatic Setup
 
@@ -94,6 +94,14 @@ You should be able to reach the service at: http://localhost:8000. The port that
 | list_products     | GET     | /products           |
 | purchase_products | PUT     | /products/{product_id}/purchase |
 | update_product    | PUT     | /products//products/{product_id} |
+
+## Steps for Openshift
+1. Deploy the postgresql
+   `oc apply -f .tekton/postgresql.yaml`
+2. Deploy the pipeline
+   `oc apply -f .tekton/pipeline.yaml`
+3. Deploy the tasks
+    `oc apply -f .tekton/tasks.yaml`
 
 ## License
 

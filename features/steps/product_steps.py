@@ -37,7 +37,9 @@ def step_impl(context):
     # List all of the products and delete them one by one
     rest_endpoint = f"{context.base_url}/api/products"
     context.resp = requests.get(rest_endpoint)
-    assert context.resp.status_code == HTTP_200_OK
+    assert (
+        context.resp.status_code == HTTP_200_OK
+    ), f"GET failed: Status code {context.resp.status_code}, Response body: {context.resp.text}"
     for product in context.resp.json():
         context.resp = requests.delete(f"{rest_endpoint}/{product['id']}")
         assert context.resp.status_code == HTTP_204_NO_CONTENT
