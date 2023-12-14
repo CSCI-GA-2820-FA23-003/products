@@ -103,6 +103,35 @@ You should be able to reach the service at: http://localhost:8000. The port that
 3. Deploy the tasks
     `oc apply -f .tekton/tasks.yaml`
 
+## Steps for Local Kubernetes deployment
+Make sure your cluster is running. To bring up cluster use the following command:
+
+`Make cluster`
+
+Check if you etc hosts has cluster-registry defined. Check by using following command:
+
+`cat /etc/hosts`
+
+If cluster registry is not defined use following command:
+
+`sudo bash -c "echo '127.0.0.1    cluster-registry' >> /etc/hosts"`
+
+After that build docker image as follows:
+
+`docker build -t products:1.0 .`
+
+Tag the image, and push it to local registry: 
+
+`docker tag products:1.0 cluster-registry:32000/products:1.0`
+
+`docker push cluster-registry:32000/products:1.0`
+
+Apply to local cluster:
+`kubectl apply -f k8s/`.
+
+
+
+
 ## License
 
 Copyright (c) John Rofrano. All rights reserved.
